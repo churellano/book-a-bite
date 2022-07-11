@@ -1,4 +1,6 @@
 import * as React from "react";
+import { Link } from "react-router-dom";
+
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -13,21 +15,19 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 
-import { Link } from "react-router-dom";
-
-const Navbar = (props) => {
+export default function Navbar(props) {
   const pages = props.isGuestMode
     ? [
-        { name: "Restaurant", link: "/guest/restaurant" },
+        { name: "Restaurants", link: "/guest/main" },
         { name: "Current Bookings", link: "/guest/currentBookings" },
       ]
-    : [{ name: "Restaurant", link: "/admin/restaurant" }];
+    : [{ name: "Restaurants", link: "/owner/main" }];
   const settings = props.isGuestMode
     ? [
         { name: "Profile", link: "/guest/profile" },
         { name: "Logout", link: "/guest/logout" },
       ]
-    : [{ name: "Logout", link: "/admin/logout" }];
+    : [{ name: "Logout", link: "/owner/logout" }];
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -48,7 +48,7 @@ const Navbar = (props) => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ mb: 5 }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
@@ -56,7 +56,7 @@ const Navbar = (props) => {
             variant="h6"
             noWrap
             component="a"
-            href={props.isGuestMode ? "/guest/main" : "/admin/main"}
+            href={props.isGuestMode ? "/guest/main" : "/owner/main"}
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -103,7 +103,7 @@ const Navbar = (props) => {
                 <MenuItem
                   component={Link}
                   to={page.link}
-                  key={page}
+                  key={page.name}
                   onClick={handleCloseNavMenu}
                 >
                   <Typography textAlign="center">{page.name}</Typography>
@@ -116,7 +116,7 @@ const Navbar = (props) => {
             variant="h5"
             noWrap
             component="a"
-            href={props.isGuestMode ? "/guest/main" : "/admin/main"}
+            href={props.isGuestMode ? "/guest/main" : "/owner/main"}
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
@@ -183,5 +183,4 @@ const Navbar = (props) => {
       </Container>
     </AppBar>
   );
-};
-export default Navbar;
+}
