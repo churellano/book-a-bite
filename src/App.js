@@ -4,6 +4,7 @@ import GuestCurrentBookings from "./guest/GuestCurrentBookings";
 import GuestMain from "./guest/GuestMain";
 import GuestProfile from "./guest/GuestProfile";
 import OwnerMain from "./owner/OwnerMain";
+import OwnerRestaurantMap from "./owner/OwnerRestaurantMap";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           element={<GuestCurrentBookings />}
         />
         <Route path="owner/main" element={<OwnerMain />} />
+        <Route path="owner/map" element={<OwnerRestaurantMap />} />
       </Routes>
     </BrowserRouter>
   );
