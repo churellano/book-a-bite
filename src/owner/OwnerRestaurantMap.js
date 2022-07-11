@@ -10,8 +10,9 @@ export default function OwnerRestaurantMap() {
   const test = 10
   const [rows, setRows] = useState(test);
   const [columns, setColumns] = useState(test)
-  // const [cells, setCells] = useState([...Array(rows * columns).map((e, i => ({ x: i / })))])
-  const [cells, setCells] = useState([...Array(rows * columns)])
+  const [cells, setCells] = useState(Array.from({ length: rows * columns}).map(
+    (e, i) => ({ x: i % columns, y: i % rows })
+  ))
 
   const gridTemplateStyle = `repeat(${rows}, 1fr) / repeat(${columns}, 1fr)`
 
@@ -21,7 +22,7 @@ export default function OwnerRestaurantMap() {
       <Container>
         <div className="restaurant-map" style={{gridTemplate: gridTemplateStyle}}>
           {
-            cells.map((e, i) => <div key={i} className="table-cell" >{i}</div>)
+            cells.map((cell, i) => <div key={i} className="table-cell" >{`(${cell.x}, ${cell.y})`}</div>)
           }
         </div>
       </Container>
