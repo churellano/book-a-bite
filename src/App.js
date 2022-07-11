@@ -1,24 +1,23 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import GuestCurrentBookings from "./guest/GuestCurrentBookings";
+import GuestMain from "./guest/GuestMain";
+import GuestProfile from "./guest/GuestProfile";
+import OwnerMain from "./owner/OwnerMain";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="guest/main" element={<GuestMain />} />
+        <Route path="guest/profile" element={<GuestProfile />} />
+        <Route
+          path="guest/currentBookings"
+          element={<GuestCurrentBookings />}
+        />
+        <Route path="owner/main" element={<OwnerMain />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
