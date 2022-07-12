@@ -52,20 +52,34 @@ export default function Login() {
                                     required
                                 />
                             </Grid>
-                            <Grid item xs={12} sx={{ mb: 5, mt: 1 }} >
+                            <Grid item xs={12} sx={{ mb: 4, mt: 1 }} >
                                 <Button fullWidth type="submit" variant="contained">
                                     Sign In
                                 </Button>
                             </Grid>
 
-                            <Grid item xs={10}>
+                            <Grid item xs={6} sm={6}>
                                 <Link href="#" variant="body1">
                                     Reset Your Password
                                 </Link>
                             </Grid>
-                            <Grid item>
-                                <Link href="/login/signup" variant="body1">
+                            <Grid item container xs={6} sm={6} style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignContent: 'flex-end'
+                            }}>
+                                <Link href="/login/signupGuest" variant="body1">
                                     Sign Up
+                                </Link>
+                            </Grid>
+
+                            <Grid item container sm={12} xs={12} style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignContent: 'flex-end'
+                            }}>
+                                <Link href="/login/signupRestaurant" variant="body1">
+                                    Sign Up as a Restaurant
                                 </Link>
                             </Grid>
 

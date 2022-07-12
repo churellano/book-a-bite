@@ -2,16 +2,15 @@ import React from 'react'
 import { Box, Container, Paper, Grid, Typography } from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
 
-export default function SignUp() {
+export default function RestaurantSignUp() {
     const submit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         console.log({
+            RestaurantName: data.get('restaurantName'),
+            RestaurantAddress: data.get('address'),
             email: data.get('email'),
-            password: data.get('password'),
-            fname: data.get('firstname'),
-            lname: data.get('lastname'),
-            phone: data.get('phone')
+            password: data.get('password')
         });
     };
 
@@ -29,39 +28,30 @@ export default function SignUp() {
                     }}
                 >
                     <Typography variant="h4" component="div" mb={3}>
-                        Sign up
+                        Sign Up A Restaurant
                     </Typography>
 
                     <Box component="form" onSubmit={submit} >
-                        {/* TODO: SignUp for Restaurants. Restaurant Name + Address?*/}
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12} sm={8}>
                                 <TextField
                                     fullWidth
-                                    name="firstname"
-                                    id="firstname"
-                                    label="First Name"
-                                    required
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    name="lastname"
-                                    id="lastname"
-                                    label="Last Name"
+                                    name="restaurantName"
+                                    id="restaurantName"
+                                    label="Name of Restaurant"
                                     required
                                 />
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
                                     fullWidth
-                                    name="phone"
-                                    id="phone"
-                                    label="Phone Number"
+                                    name="address"
+                                    id="address"
+                                    label="Restaurant Address"
+                                    required
                                 />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} mt={2}>
                                 <TextField
                                     fullWidth
                                     name="email"
