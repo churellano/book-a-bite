@@ -11,7 +11,9 @@ export default function GuestCurrentBookings(props) {
   useEffect(() => {
     axios
       // .get("http://localhost:8080/api/guest/currentBookings")
-      .get("https://cmpt-372-project.uc.r.appspot.com/api/guest/currentBookings")
+      .get(
+        "https://cmpt-372-project.uc.r.appspot.com/api/guest/currentBookings"
+      )
       .then((res) => {
         setRestraurants(res.data);
       })

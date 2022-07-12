@@ -1,17 +1,17 @@
-var express = require("express");
-var path = require("path");
-var cors = require("cors");
-let restaurants = require('./testRestaurants')
-let guests = require('./testGuests')
+let express = require("express");
+let path = require("path");
+let cors = require("cors");
+let restaurants = require("./testRestaurants");
+let guests = require("./testGuests");
 
-var app = express();
-var port = process.env.PORT || 8080;
+let app = express();
+let port = process.env.PORT || 8080;
 // const { Pool } = require('pg');
-// var pool = new Pool({
+// let pool = new Pool({
 //   connectionString: 'postgres://postgres:root@localhost/users'
 // })
 
-var options = {
+let options = {
   dotfiles: "ignore",
   extensions: ["html", "htm"],
   index: "index.html",
@@ -26,15 +26,15 @@ app.get("/api/guest/main", (req, res) => {
 });
 
 app.get("/api/guest/currentBookings", (req, res) => {
-    res.json(restaurants);
+  res.json(restaurants);
 });
 
 app.get("/api/guest/profile", (req, res) => {
-    res.json(guests[0]);
+  res.json(guests[0]);
 });
 
 app.get("/api/owner/main", (req, res) => {
-    res.json(restaurants);
+  res.json(restaurants);
 });
 
 // send static files for every route

@@ -30,12 +30,8 @@ export default function GuestProfile(props) {
         <Typography variant="h5" component="div">
           User Info
         </Typography>
-        <Typography color="text.secondary">
-          Name: {guest.name}
-        </Typography>
-        <Typography color="text.secondary">
-          Phone: {guest.phone}
-        </Typography>
+        <Typography color="text.secondary">Name: {guest.name}</Typography>
+        <Typography color="text.secondary">Phone: {guest.phone}</Typography>
         <Typography mb={2} color="text.secondary">
           Email: {guest.email}
         </Typography>
