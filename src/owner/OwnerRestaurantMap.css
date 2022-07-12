@@ -3,6 +3,7 @@
   background-color: #000000;
   border: 1px solid #000000;
   gap: 1px;
+  width: 60%;
 }
 
 .table-cell {
