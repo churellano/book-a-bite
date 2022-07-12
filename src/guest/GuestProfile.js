@@ -1,12 +1,22 @@
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { Box, Typography, Button, TextField } from "@mui/material";
 
 import Navbar from "../common-components/Navbar";
-import testGuests from "../testGuests";
 
 export default function GuestProfile(props) {
   const [email, setEmail] = useState("");
+  const [guest, setGuest] = useState([]);
+
+  useEffect(() => {
+    axios
+      // .get("http://localhost:8080/api/guest/profile")
+      .get("https://cmpt-372-project.uc.r.appspot.com/api/guest/profile")
+      .then((res) => {
+        setGuest(res.data);
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   const onEmailSubmit = (e) => {
     e.preventDefault();
@@ -21,13 +31,13 @@ export default function GuestProfile(props) {
           User Info
         </Typography>
         <Typography color="text.secondary">
-          Name: {testGuests[0].name}
+          Name: {guest.name}
         </Typography>
         <Typography color="text.secondary">
-          Phone: {testGuests[0].phone}
+          Phone: {guest.phone}
         </Typography>
         <Typography mb={2} color="text.secondary">
-          Email: {testGuests[0].email}
+          Email: {guest.email}
         </Typography>
         <Button variant="contained" size="small">
           Edit Profile

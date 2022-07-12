@@ -1,4 +1,4 @@
-let restaurants = [
+module.exports = [
   {
     name: "Restaurant name 1",
     address: "Restaurant address 1",
@@ -24,5 +24,3 @@ let restaurants = [
     rating: "Restaurant rating 4",
   },
 ];
-
-export default restaurants;

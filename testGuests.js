@@ -1,4 +1,4 @@
-let guests = [
+module.exports = [
   {
     name: "Guest name 1",
     phone: "Guest phone 1",
@@ -20,5 +20,3 @@ let guests = [
     email: "Guest email 4",
   },
 ];
-
-export default guests;

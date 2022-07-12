@@ -1,17 +1,30 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { Button, Grid } from "@mui/material";
 import { Box } from "@mui/material";
 
 import Navbar from "../common-components/Navbar";
 import RestaurantListItem from "../common-components/RestaurantListItem";
-import testRestaurants from "../testRestaurants";
 
 export default function OwnerMain() {
+  const [restraurants, setRestraurants] = useState([]);
+
+  useEffect(() => {
+    axios
+      // .get("http://localhost:8080/api/owner/main")
+      .get("https://cmpt-372-project.uc.r.appspot.com/api/owner/main")
+      .then((res) => {
+        setRestraurants(res.data);
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
   const addRestaurant = () => {};
   return (
     <div>
       <Navbar isGuestMode={false} />
       <Grid container spacing={2}>
-        {testRestaurants.map((rest) => (
+        {restraurants.map((rest) => (
           <Grid item xs={12} sm={6}>
             <RestaurantListItem data={rest} page="ownerMain" />
           </Grid>
