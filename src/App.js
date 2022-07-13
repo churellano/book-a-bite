@@ -12,16 +12,16 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="login" element={<Login />} />
-        <Route path="login/signupGuest" element={<GuestSignUp />} />
-        <Route path="login/signupRestaurant" element={<RestaurantSignUp />} />
-        <Route path="guest/main" element={<GuestMain />} />
-        <Route path="guest/profile" element={<GuestProfile />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/signupGuest" element={<GuestSignUp />} />
+        <Route path="/signupRestaurant" element={<RestaurantSignUp />} />
+        <Route path="/guest/main" element={<GuestMain />} />
+        <Route path="/guest/profile" element={<GuestProfile />} />
         <Route
-          path="guest/currentBookings"
+          path="/guest/currentBookings"
           element={<GuestCurrentBookings />}
         />
-        <Route path="owner/main" element={<OwnerMain />} />
+        <Route path="/owner/main" element={<OwnerMain />} />
       </Routes>
     </BrowserRouter>
   );
