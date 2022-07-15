@@ -29,7 +29,7 @@ export default function RestaurantSignUp() {
   const register = async (registerEmail, registerPassword) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, registerEmail, registerPassword);
-      navigate("/");
+      navigate("/owner/main");
       console.log("New Restaurant Account Created!")
       console.log(userCredential);
     } catch (error) {
