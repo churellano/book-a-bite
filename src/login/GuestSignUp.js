@@ -41,15 +41,6 @@ export default function GuestSignUp() {
     // to access logged in user: $auth.currentUser.email
   };
 
-  const login = async () => {
-    // TODO: login logic
-  };
-
-  const logout = async () => {
-    // TODO: logout logic
-
-  };
-
   return (
     <div>
       <Container component="main" maxWidth="sm">

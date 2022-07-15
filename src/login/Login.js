@@ -1,15 +1,37 @@
 import React from "react";
 import { Box, Container, Paper, Grid, Typography } from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
+import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { auth } from "../firebase-config";
 
 export default function Login() {
+  onAuthStateChanged(auth, (user) => {
+    if (user !== null) {
+      console.log(`user ${auth.currentUser.email} is already logged in!`);
+    } else {
+      console.log("No User Signed in (firebase onAuthStateChanged)");
+    }
+  });
+
   const submit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    // console.log({
+    //   email: data.get("email"),
+    //   password: data.get("password"),
+    // });
+    const email = data.get("email");
+    const password = data.get("password");
+    login(email, password);
+  };
+
+  const login = async (loginEmail, loginPassword) => {
+    try {
+      const user = await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+      console.log(user);
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   return (
