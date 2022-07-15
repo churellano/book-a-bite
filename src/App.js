@@ -5,7 +5,7 @@ import GuestMain from "./guest/GuestMain";
 import GuestProfile from "./guest/GuestProfile";
 import Login from "./login/Login";
 import GuestSignUp from "./login/GuestSignUp";
-import RestaurantSignUp from "./login/RestaurantSignUp";
+import OwnerSignUp from "./login/OwnerSignUp";
 import OwnerMain from "./owner/OwnerMain";
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signupGuest" element={<GuestSignUp />} />
-        <Route path="/signupRestaurant" element={<RestaurantSignUp />} />
+        <Route path="/signupRestaurant" element={<OwnerSignUp />} />
         <Route path="/guest/main" element={<GuestMain />} />
         <Route path="/guest/profile" element={<GuestProfile />} />
         <Route

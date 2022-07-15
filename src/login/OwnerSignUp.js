@@ -2,13 +2,13 @@ import React from "react";
 import { Box, Container, Paper, Grid, Typography } from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
 
-export default function RestaurantSignUp() {
+export default function OwnerSignUp() {
   const submit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
-      RestaurantName: data.get("restaurantName"),
-      RestaurantAddress: data.get("address"),
+      fname: data.get("firstname"),
+      lname: data.get("lastname"),
       email: data.get("email"),
       password: data.get("password"),
     });
@@ -28,26 +28,26 @@ export default function RestaurantSignUp() {
           }}
         >
           <Typography variant="h4" component="div" mb={3}>
-            Sign Up A Restaurant
+            Sign Up An Owner
           </Typography>
 
           <Box component="form" onSubmit={submit}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={8}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  name="restaurantName"
-                  id="restaurantName"
-                  label="Name of Restaurant"
+                  name="firstname"
+                  id="firstname"
+                  label="First Name"
                   required
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  name="address"
-                  id="address"
-                  label="Restaurant Address"
+                  name="lastname"
+                  id="lastname"
+                  label="Last Name"
                   required
                 />
               </Grid>
