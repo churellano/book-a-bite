@@ -1,18 +1,54 @@
 import React from "react";
 import { Box, Container, Paper, Grid, Typography } from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
+import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { auth } from "../firebase-config";
 
 export default function GuestSignUp() {
+  onAuthStateChanged(auth, (user) => {
+    if (user !== null) {
+      console.log("user already logged in!");
+      console.log(auth.currentUser.email)
+    } else {
+      console.log("No User Signed in (firebase onAuthStateChanged)");
+    }
+  });
+
   const submit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      fname: data.get("firstname"),
-      lname: data.get("lastname"),
-      phone: data.get("phone"),
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    // console.log({
+    //   fname: data.get("firstname"),
+    //   lname: data.get("lastname"),
+    //   phone: data.get("phone"),
+    //   email: data.get("email"),
+    //   password: data.get("password"),
+    // });
+
+    const email = data.get("email");
+    const password = data.get("password");
+    register(email, password);
+    // TODO: Save user fname, lname, phone in DB
+  };
+
+  const register = async (registerEmail, registerPassword) => {
+    try {
+      const newUser = await createUserWithEmailAndPassword(auth, registerEmail, registerPassword);
+      console.log(newUser);
+    } catch (error) {
+      console.log(error.message);
+    }
+    // new User should now show up in firebase console
+    // to access logged in user: $auth.currentUser.email
+  };
+
+  const login = async () => {
+    // TODO: login logic
+  };
+
+  const logout = async () => {
+    // TODO: logout logic
+
   };
 
   return (
