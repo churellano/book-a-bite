@@ -7,8 +7,7 @@ import { auth } from "../firebase-config";
 export default function GuestSignUp() {
   onAuthStateChanged(auth, (user) => {
     if (user !== null) {
-      console.log("user already logged in!");
-      console.log(auth.currentUser.email)
+      console.log(`user ${auth.currentUser.email} is already logged in!`);
     } else {
       console.log("No User Signed in (firebase onAuthStateChanged)");
     }
