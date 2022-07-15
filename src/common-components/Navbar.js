@@ -53,7 +53,6 @@ export default function Navbar(props) {
   };
 
   const logout = async () => {
-    // TODO: logout logic
     await signOut(auth);
   };
   // // To observe sign in state in console
