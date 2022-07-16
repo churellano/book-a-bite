@@ -1,15 +1,47 @@
-import React from "react";
-import { Box, Container, Paper, Grid, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Container, Paper, Grid, Typography, Alert } from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
+import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { auth } from "../firebase-config";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const [showError, setShowError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
+
+  onAuthStateChanged(auth, (user) => {
+    if (user !== null) {
+      console.log(`user ${auth.currentUser.email} is already logged in!`);
+    } else {
+      console.log("No User Signed in (firebase onAuthStateChanged)");
+    }
+  });
+
   const submit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    setShowError(false);
+    const email = data.get("email");
+    const password = data.get("password");
+    login(email, password);
+    // console.log({
+    //   email: data.get("email"),
+    //   password: data.get("password"),
+    // });
+  };
+
+  const login = async (loginEmail, loginPassword) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+      // TODO: Naviagte to correct path (Guest/Restaurant)
+      navigate("/guest/main");
+      console.log(userCredential);
+    } catch (error) {
+      setShowError(true);
+      setErrorMsg(error.message);
+      console.log(error.message);
+    }
   };
 
   return (
@@ -28,6 +60,8 @@ export default function Login() {
           <Typography variant="h4" component="div" mb={3}>
             Sign in
           </Typography>
+
+          {showError && <Alert severity="error">{errorMsg}</Alert>}
 
           <Box component="form" onSubmit={submit}>
             <Grid container spacing={2}>
