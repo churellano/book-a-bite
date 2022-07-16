@@ -1,15 +1,44 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Box, Container, Paper, Grid, Typography } from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
+import { loginGuest, loginOwner } from "../api/api";
 
 export default function Login() {
+  const navigate = useNavigate();
+
   const submit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+
+    // TODO: authenticate through Identity Platform
+    let authenticated = true;
+
+    if (authenticated) {
+      // try to login as a guest
+      loginGuest(data.get("email"))
+        .then((res) => {
+          if (res.data) {
+            navigate("/guest/main");
+          } else {
+            console.log("Error: Guest not found");
+          }
+        })
+        .catch((e) => console.error(e));
+
+      // if guest login failed, try to login as owner
+      loginOwner(data.get("email"))
+        .then((res) => {
+          if (res.data) {
+            navigate("/owner/main");
+          } else {
+            console.log("Error: Owner not found");
+          }
+        })
+        .catch((e) => console.error(e));
+    }
+
+    // TODO: handle user not found at the front end
   };
 
   return (

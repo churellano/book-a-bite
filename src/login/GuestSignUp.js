@@ -1,18 +1,21 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Box, Container, Paper, Grid, Typography } from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
+import { addGuest } from "../api/api";
 
 export default function GuestSignUp() {
+  const navigate = useNavigate();
+
   const submit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      fname: data.get("firstname"),
-      lname: data.get("lastname"),
-      phone: data.get("phone"),
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    addGuest(data)
+      .then((res) => {
+        console.log("Added user!", res);
+        navigate("/");
+      })
+      .catch((err) => console.error(err));
   };
 
   return (

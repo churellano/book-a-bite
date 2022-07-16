@@ -4,6 +4,7 @@ let cors = require("cors");
 let restaurants = require("./testRestaurants");
 let guests = require("./testGuests");
 let Knex = require("knex");
+var session = require("express-session");
 
 let app = express();
 let port = process.env.PORT || 8080;
@@ -72,6 +73,93 @@ app.use("/", cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/", express.static("./build", options));
+app.use(
+  session({
+    name: "session",
+    secret: "secure-pwd", // TODO: change this to env vat for security
+    resave: false,
+    maxAge: 30 * 60 * 1000, // 30 minutes
+  })
+);
+
+app.post("/api/addGuest", async (req, res) => {
+  try {
+    result = await pool
+      .insert([
+        {
+          fname: req.body.fname,
+          lname: req.body.lname,
+          phone: req.body.phone,
+          email: req.body.email,
+        },
+      ])
+      .into("guests");
+    console.log("Added new guest", result);
+    res.json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json();
+  }
+});
+
+app.post("/api/addOwner", async (req, res) => {
+  try {
+    result = await pool
+      .insert([
+        {
+          fname: req.body.fname,
+          lname: req.body.lname,
+          email: req.body.email,
+        },
+      ])
+      .into("owners");
+    console.log("Added new owner", result);
+    res.json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json();
+  }
+});
+
+app.post("/api/guest/login", async (req, res) => {
+  try {
+    let row = await pool("guests").where("email", req.body.email).select("*");
+    if (row.length == 1) {
+      let guest = row[0];
+      req.session.usr = guest;
+      console.log("Logged in user:", guest);
+      res.json(guest);
+    } else {
+      console.error(
+        "Guest Login Error: either guest not found or multiple guests are found"
+      );
+      res.json(null);
+    }
+  } catch (e) {
+    console.error(e);
+    res.status(500).json();
+  }
+});
+
+app.post("/api/owner/login", async (req, res) => {
+  try {
+    let row = await pool("owners").where("email", req.body.email).select("*");
+    if (row.length == 1) {
+      let owner = row[0];
+      req.session.usr = owner;
+      console.log("Logged in user:", owner);
+      res.json(owner);
+    } else {
+      console.error(
+        "Owner Login Error: either owner not found or multiple owners are found"
+      );
+      res.json(null);
+    }
+  } catch (e) {
+    console.error(e);
+    res.status(500).json();
+  }
+});
 
 app.get("/api/guest/main", (req, res) => {
   res.json(restaurants);

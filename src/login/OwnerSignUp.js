@@ -1,17 +1,21 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Box, Container, Paper, Grid, Typography } from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
+import { addOwner } from "../api/api";
 
 export default function OwnerSignUp() {
+  const navigate = useNavigate();
+
   const submit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      fname: data.get("firstname"),
-      lname: data.get("lastname"),
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    addOwner(data)
+      .then((res) => {
+        console.log("Added owner", res);
+        navigate("/");
+      })
+      .catch((e) => console.error(e));
   };
 
   return (
