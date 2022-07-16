@@ -1,0 +1,16 @@
+CREATE TABLE guests (
+    id SERIAL,
+    fname VARCHAR(20),
+    lname VARCHAR(20),
+    phone VARCHAR(20),
+    email VARCHAR(20),
+    PRIMARY KEY (email)
+);
+
+CREATE TABLE owners (
+    id SERIAL,
+    fname VARCHAR(20),
+    lname VARCHAR(20),
+    email VARCHAR(20),
+    PRIMARY KEY (email)
+);
