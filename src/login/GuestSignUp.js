@@ -1,21 +1,47 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { Box, Container, Paper, Grid, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Container, Paper, Grid, Typography, Alert } from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { auth } from "../firebase-config";
+import { useNavigate } from "react-router-dom";
 import { addGuest } from "../api/api";
 
 export default function GuestSignUp() {
+  const [showError, setShowError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
 
   const submit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    addGuest(data)
-      .then((res) => {
-        console.log("Added user!", res);
-        navigate("/");
-      })
-      .catch((err) => console.error(err));
+    setErrorMsg(false);
+    register(data);
+  };
+
+  const register = async (data) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        data.get("email"),
+        data.get("password")
+      );
+      // Add guest to DB
+      addGuest(data)
+        .then((res) => {
+          console.log("New Guest Account Created!", res);
+          console.log(userCredential);
+          navigate("/");
+        })
+        .catch((err) => console.error(err));
+    } catch (error) {
+      setShowError(true);
+      setErrorMsg(error.message);
+      console.log(error.message);
+    }
+    // to access logged in user: $auth.currentUser.email
   };
 
   return (
@@ -34,6 +60,8 @@ export default function GuestSignUp() {
           <Typography variant="h4" component="div" mb={3}>
             Sign up
           </Typography>
+
+          {showError && <Alert severity="error">{errorMsg}</Alert>}
 
           <Box component="form" onSubmit={submit}>
             <Grid container spacing={2}>

@@ -1,20 +1,41 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { Box, Container, Paper, Grid, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Container, Paper, Grid, Typography, Alert } from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
+import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase-config";
+import { useNavigate } from "react-router-dom";
 import { loginGuest, loginOwner } from "../api/api";
 
 export default function Login() {
+  const [showError, setShowError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
+
+  onAuthStateChanged(auth, (user) => {
+    if (user !== null) {
+      console.log(`user ${auth.currentUser.email} is already logged in!`);
+    } else {
+      console.log("No User Signed in (firebase onAuthStateChanged)");
+    }
+  });
 
   const submit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    setShowError(false);
+    login(data);
+  };
 
-    // TODO: authenticate through Identity Platform
-    let authenticated = true;
+  const login = async (data) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        data.get("email"),
+        data.get("password")
+      );
+      // TODO: Naviagte to correct path (Guest/Restaurant)
 
-    if (authenticated) {
+      // Retrieve user data from DB and create a session
       // try to login as a guest
       loginGuest(data.get("email"))
         .then((res) => {
@@ -36,9 +57,12 @@ export default function Login() {
           }
         })
         .catch((e) => console.error(e));
+      console.log(userCredential);
+    } catch (error) {
+      setShowError(true);
+      setErrorMsg(error.message);
+      console.log(error.message);
     }
-
-    // TODO: handle user not found at the front end
   };
 
   return (
@@ -57,6 +81,8 @@ export default function Login() {
           <Typography variant="h4" component="div" mb={3}>
             Sign in
           </Typography>
+
+          {showError && <Alert severity="error">{errorMsg}</Alert>}
 
           <Box component="form" onSubmit={submit}>
             <Grid container spacing={2}>
