@@ -40,6 +40,8 @@ export default function Login() {
       loginGuest(data.get("email"))
         .then((res) => {
           if (res.data) {
+            // TODO: instead of storing userId in sessionStorage, store userId at the backend using express-session
+            sessionStorage.setItem("userId", res.data.guestid);
             navigate("/guest/main");
           } else {
             console.log("Error: Guest not found");
@@ -51,6 +53,7 @@ export default function Login() {
       loginOwner(data.get("email"))
         .then((res) => {
           if (res.data) {
+            sessionStorage.setItem("userId", res.data.ownerid);
             navigate("/owner/main");
           } else {
             console.log("Error: Owner not found");
