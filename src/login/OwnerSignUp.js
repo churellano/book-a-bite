@@ -27,18 +27,25 @@ export default function OwnerSignUp() {
         }
       }, 500);
     });
-    return () => { // prevents repeated calls
+    return () => {
+      // prevents repeated calls
       unsubscribe();
     };
   }, []);
 
   const autoNavigateIfLoggedIn = () => {
-    if (JSON.parse(localStorage.getItem("isLoggedIn")) && !JSON.parse(localStorage.getItem("isOwner"))) {
+    if (
+      JSON.parse(localStorage.getItem("isLoggedIn")) &&
+      !JSON.parse(localStorage.getItem("isOwner"))
+    ) {
       navigate("/guest/main");
       setTimeout(() => {
         window.location.reload();
       }, 500);
-    } else if (JSON.parse(localStorage.getItem("isLoggedIn")) && JSON.parse(localStorage.getItem("isOwner"))) {
+    } else if (
+      JSON.parse(localStorage.getItem("isLoggedIn")) &&
+      JSON.parse(localStorage.getItem("isOwner"))
+    ) {
       navigate("/owner/main");
       setTimeout(() => {
         window.location.reload();
@@ -56,7 +63,6 @@ export default function OwnerSignUp() {
   };
 
   const register = async (data) => {
-
     addOwner(data)
       .then(async (res) => {
         const userCredential = await createUserWithEmailAndPassword(
@@ -65,6 +71,8 @@ export default function OwnerSignUp() {
           data.get("password")
         );
         console.log("New Owner Account Created!", res);
+        localStorage.setItem("isOwner", "true");
+        localStorage.setItem("isLoggedIn", "true");
         navigate("/");
       })
       .catch((error) => {

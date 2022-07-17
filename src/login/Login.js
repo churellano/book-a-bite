@@ -27,9 +27,6 @@ export default function Login() {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setTimeout(() => {
         if (currentUser !== null) {
-          console.log(
-            `user ${auth.currentUser.email} is logged in as a 
-            ${JSON.parse(localStorage.getItem("isOwner")) ? "Owner" : "Guest"}`);
           autoNavigateIfLoggedIn();
         } else {
           console.log("No User is signed in");
@@ -223,7 +220,7 @@ export default function Login() {
                 }}
               >
                 <Link href="/signupRestaurant" variant="body1">
-                  Sign Up as a Restaurant
+                  Sign Up as an Owner
                 </Link>
               </Grid>
             </Grid>
