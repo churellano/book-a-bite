@@ -1,11 +1,15 @@
 import React, { useState } from "react";
-import { Box, Container, Paper, Grid, Typography } from "@mui/material";
+import { Box, Container, Paper, Grid, Typography, Alert } from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
-import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
 import { auth } from "../firebase-config";
 import { useNavigate } from "react-router-dom";
+import { addOwner } from "../api/api";
 
-export default function RestaurantSignUp() {
+export default function OwnerSignUp() {
   const [showError, setShowError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
@@ -13,25 +17,24 @@ export default function RestaurantSignUp() {
   const submit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    setErrorMsg(false);
-    // TODO: Save RestaurantName & RestaurantAddress in DB
-    const email = data.get("email");
-    const password = data.get("password");
-    register(email, password);
-    // console.log({
-    //   RestaurantName: data.get("restaurantName"),
-    //   RestaurantAddress: data.get("address"),
-    //   email: data.get("email"),
-    //   password: data.get("password"),
-    // });
+    setShowError(false);
+    register(data);
   };
 
-  const register = async (registerEmail, registerPassword) => {
+  const register = async (data) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, registerEmail, registerPassword);
-      navigate("/owner/main");
-      console.log("New Restaurant Account Created!")
-      console.log(userCredential);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        data.get("email"),
+        data.get("password")
+      );
+      addOwner(data)
+        .then((res) => {
+          console.log("New Owner Account Created!", res);
+          console.log(userCredential);
+          navigate("/");
+        })
+        .catch((e) => console.error(e));
     } catch (error) {
       setShowError(true);
       setErrorMsg(error.message);
@@ -54,28 +57,28 @@ export default function RestaurantSignUp() {
           }}
         >
           <Typography variant="h4" component="div" mb={3}>
-            Sign Up A Restaurant
+            Sign Up An Owner
           </Typography>
 
           {showError && <Alert severity="error">{errorMsg}</Alert>}
 
           <Box component="form" onSubmit={submit}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={8}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  name="restaurantName"
-                  id="restaurantName"
-                  label="Name of Restaurant"
+                  name="firstname"
+                  id="firstname"
+                  label="First Name"
                   required
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  name="address"
-                  id="address"
-                  label="Restaurant Address"
+                  name="lastname"
+                  id="lastname"
+                  label="Last Name"
                   required
                 />
               </Grid>

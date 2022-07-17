@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { Box, Container, Paper, Grid, Typography, Alert } from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
-import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
 import { auth } from "../firebase-config";
 import { useNavigate } from "react-router-dom";
+import { addGuest } from "../api/api";
 
 export default function GuestSignUp() {
   const [showError, setShowError] = useState(false);
@@ -13,26 +17,25 @@ export default function GuestSignUp() {
   const submit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    setErrorMsg(false);
-    // TODO: Save user fname, lname, phone in DB
-    const email = data.get("email");
-    const password = data.get("password");
-    register(email, password);
-    // console.log({
-    //   fname: data.get("firstname"),
-    //   lname: data.get("lastname"),
-    //   phone: data.get("phone"),
-    //   email: data.get("email"),
-    //   password: data.get("password"),
-    // });
+    setShowError(false);
+    register(data);
   };
 
-  const register = async (registerEmail, registerPassword) => {
+  const register = async (data) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, registerEmail, registerPassword);
-      navigate("/");
-      console.log("New Guest Account Created!")
-      console.log(userCredential);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        data.get("email"),
+        data.get("password")
+      );
+      // Add guest to DB
+      addGuest(data)
+        .then((res) => {
+          console.log("New Guest Account Created!", res);
+          console.log(userCredential);
+          navigate("/");
+        })
+        .catch((err) => console.error(err));
     } catch (error) {
       setShowError(true);
       setErrorMsg(error.message);

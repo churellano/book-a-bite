@@ -13,4 +13,13 @@
 
 # [START app_yaml]
 runtime: nodejs14
+env_variables:
+  DB_USER: postgres
+  DB_PASS: 12345
+  DB_NAME: main-db
+  DB_HOST: 172.27.0.2
+  DB_PORT: 5432
+
+vpc_access_connector:
+  name: "projects/cmpt-372-project/locations/us-central1/connectors/connect-to-sql"
 # [END app_yaml]
