@@ -1,23 +1,22 @@
 import { Box, List, ListItemButton, Paper, Typography } from "@mui/material";
+import { useState } from "react";
+import GuestConfirmReservationModal from "./GuestConfirmReservationModal";
+import Utility from "../utility";
 
-function formatTime(date) {
-  // Change hour 0 to 12 midnight if needed
-  let hour = date.getHours() % 12;
-  const period = date.getHours() < 12 ? 'am' : 'pm';
-  hour = hour ? hour : 12;
+export default function GuestTableAvailableTimes({ availableTimes }) {
+  const [open, setOpen] = useState(false);
+  const [selectedTime, setSelectedTime] = useState(null);
 
-  // Add 0 if minute is single digit
-  let minute = date.getMinutes();
-  if (minute < 10) {
-    minute = minute.toString()+ '0';
+  const handleClick = (availableTime) => {
+    setSelectedTime(availableTime);
+    setOpen(true);
   }
-  
-  return `${hour}:${minute}${period}`
-}
 
-export default function GuestTableAvailableTimes({
-  availableTimes
-}) {
+  const handleConfirm = () => {
+    // TODO: Reserve time
+    console.log('Debug: Confirming reservation');
+  }
+
   return (
     <Box>
       <Typography variant="h5">Available times</Typography>
@@ -28,13 +27,25 @@ export default function GuestTableAvailableTimes({
         <List>
           {
             availableTimes.map((time, index) => (
-              <ListItemButton key={index} alignItems="center" divider={true}>
-                <Typography variant="h6">{formatTime(time)}</Typography>
+              <ListItemButton key={index} divider={true} onClick={() => handleClick(time)}>
+                <Typography variant="h6">
+                  {Utility.formatTimeTo12HourString(time.bookingTime)}
+                </Typography>
               </ListItemButton>
             ))
           }
         </List>
       </Paper>
+      {
+        selectedTime ? 
+          <GuestConfirmReservationModal
+            open={open}
+            selectedTime={selectedTime}
+            handleClose={() => setOpen(false)}
+            handleConfirm={handleConfirm}
+          /> :
+          null
+      }
     </Box>
   );
 }
