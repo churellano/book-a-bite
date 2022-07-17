@@ -14,3 +14,20 @@ CREATE TABLE owners (
     email VARCHAR(20),
     PRIMARY KEY (email)
 );
+
+CREATE TABLE restaurants (
+    restaurantID SERIAL,
+    ownerID INTEGER,
+    name VARCHAR(20),
+    address VARCHAR(50),
+    phone VARCHAR(20),
+    openingTime NUMERIC, 
+    closingTime NUMERIC,
+    minimumReservationDuration NUMERIC,
+    reservationInterval NUMERIC,
+    mapNumOfRows INTEGER,
+    mapNumOfCols INTEGER, 
+    tables jsonb,
+    capacity INTEGER,
+    FOREIGN KEY(ownerID) REFERENCES owners(ownerID)
+);

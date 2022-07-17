@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Box, Container, Paper, Grid, Typography, Alert, FormControlLabel, Checkbox } from "@mui/material";
+import {
+  Box,
+  Container,
+  Paper,
+  Grid,
+  Typography,
+  Alert,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase-config";
@@ -18,8 +27,12 @@ export default function Login() {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setTimeout(() => {
         if (currentUser !== null) {
-          console.log(`user ${auth.currentUser.email} is logged in as a ${JSON.parse(localStorage.getItem("isOwner")) ? "Owner" : "Guest"}`);
-          console.log("REFRESH PAGE if logged in but blank page")
+          console.log(
+            `user ${auth.currentUser.email} is logged in as a ${
+              JSON.parse(localStorage.getItem("isOwner")) ? "Owner" : "Guest"
+            }`
+          );
+          console.log("REFRESH PAGE if logged in but blank page");
         } else {
           console.log("No User is signed in");
           localStorage.setItem("isLoggedIn", "false");
@@ -27,22 +40,29 @@ export default function Login() {
       }, 1000);
       autoNavigateIfLoggedIn();
     });
-    return () => { // prevents repeated calls
+    return () => {
+      // prevents repeated calls
       unsubscribe();
     };
   }, []);
 
   const autoNavigateIfLoggedIn = () => {
-    if (JSON.parse(localStorage.getItem("isLoggedIn")) && !JSON.parse(localStorage.getItem("isOwner"))) {
+    if (
+      JSON.parse(localStorage.getItem("isLoggedIn")) &&
+      !JSON.parse(localStorage.getItem("isOwner"))
+    ) {
       navigate("/guest/main");
-    } else if (JSON.parse(localStorage.getItem("isLoggedIn")) && JSON.parse(localStorage.getItem("isOwner"))) {
+    } else if (
+      JSON.parse(localStorage.getItem("isLoggedIn")) &&
+      JSON.parse(localStorage.getItem("isOwner"))
+    ) {
       navigate("/owner/main");
     } else {
       console.log("cannot auto-navigate since not logged in");
     }
   };
 
-  // choice of logging in as Guest/Owner  
+  // choice of logging in as Guest/Owner
   const handleCheckboxChange = () => {
     setisOwnerChecked(!isOwnerChecked);
     console.log(`isOwner_Checkbox_Checked = ${!isOwnerChecked}`);
@@ -68,6 +88,8 @@ export default function Login() {
             );
             localStorage.setItem("isLoggedIn", "true");
             localStorage.setItem("isOwner", "false");
+            // TODO: instead of storing userId in sessionStorage, store userId at the backend using express-session
+            sessionStorage.setItem("userId", res.data.guestid);
             console.log("successful login as Guest");
             console.log(userCredential);
             setTimeout(() => {
@@ -91,6 +113,7 @@ export default function Login() {
             );
             localStorage.setItem("isLoggedIn", "true");
             localStorage.setItem("isOwner", "true");
+            sessionStorage.setItem("userId", res.data.ownerid); // todo: store userid at the backend instead of here
             console.log("successful login as Owner");
             console.log(userCredential);
             setTimeout(() => {
@@ -101,7 +124,7 @@ export default function Login() {
           }
         })
         .catch((error) => {
-          displayClientError(error.message)
+          displayClientError(error.message);
         });
     }
   };
