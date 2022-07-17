@@ -17,7 +17,7 @@ export default function OwnerSignUp() {
   const submit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    setErrorMsg(false);
+    setShowError(false);
     register(data);
   };
 
