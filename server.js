@@ -165,6 +165,46 @@ app.post("/api/owner/login", async (req, res) => {
   }
 });
 
+app.post("/api/owner/addRestaurant", async (req, res) => {
+  try {
+    let result = await pool
+      .insert([
+        {
+          ownerid: req.body.data.ownerId,
+          name: req.body.data.name,
+          address: req.body.data.address,
+          phone: req.body.data.phone,
+          openingtime: req.body.data.openingTime,
+          closingtime: req.body.data.closingTime,
+          minimumreservationduration: req.body.data.minimumReservationDuration,
+          reservationinterval: req.body.data.reservationInterval,
+          mapnumofrows: req.body.data.mapNumOfRows,
+          mapnumofcols: req.body.data.mapNumOfCols,
+          tables: req.body.data.tables,
+          capacity: req.body.data.capacity,
+        },
+      ])
+      .into("restaurants");
+    console.log("Added new restaurant");
+    res.json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json();
+  }
+});
+
+app.get("/api/owner/getAllRestaurants", async (req, res) => {
+  try {
+    let restaurantsArray = await pool("restaurants")
+      .where("ownerid", req.query.ownerId)
+      .select("*");
+    res.json(restaurantsArray);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json();
+  }
+});
+
 app.get("/api/guest/main", (req, res) => {
   res.json(restaurants);
 });

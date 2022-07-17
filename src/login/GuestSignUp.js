@@ -64,7 +64,6 @@ export default function GuestSignUp() {
           data.get("email"),
           data.get("password")
         );
-        console.log(userCredential);
         console.log("New Guest Account Created!", res);
         navigate("/");
       })

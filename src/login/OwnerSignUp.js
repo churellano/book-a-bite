@@ -65,7 +65,6 @@ export default function OwnerSignUp() {
           data.get("password")
         );
         console.log("New Owner Account Created!", res);
-        console.log(userCredential);
         navigate("/");
       })
       .catch((error) => {

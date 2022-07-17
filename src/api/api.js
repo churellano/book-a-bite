@@ -28,3 +28,19 @@ export const loginOwner = (email) => {
     email: email,
   });
 };
+
+export const addRestaurantOwner = (data) => {
+  return axios.post(`http://localhost:8080/api/owner/addRestaurant`, {
+    data: data,
+  });
+};
+
+export const getAllRestaurantsOwner = () => {
+  // todo: get userId at the backend instead of from sessionStorage
+  let ownerId = sessionStorage.getItem("userId");
+  return axios.get(`http://localhost:8080/api/owner/getAllRestaurants`, {
+    params: {
+      ownerId: ownerId,
+    },
+  });
+};
