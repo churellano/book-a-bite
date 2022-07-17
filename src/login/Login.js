@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Box, Container, Paper, Grid, Typography, Alert } from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
-import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase-config";
 import { useNavigate } from "react-router-dom";
+import { loginGuest, loginOwner } from "../api/api";
 
 export default function Login() {
   const [showError, setShowError] = useState(false);
@@ -22,20 +23,40 @@ export default function Login() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     setShowError(false);
-    const email = data.get("email");
-    const password = data.get("password");
-    login(email, password);
-    // console.log({
-    //   email: data.get("email"),
-    //   password: data.get("password"),
-    // });
+    login(data);
   };
 
-  const login = async (loginEmail, loginPassword) => {
+  const login = async (data) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        data.get("email"),
+        data.get("password")
+      );
       // TODO: Naviagte to correct path (Guest/Restaurant)
-      navigate("/guest/main");
+
+      // Retrieve user data from DB and create a session
+      // try to login as a guest
+      loginGuest(data.get("email"))
+        .then((res) => {
+          if (res.data) {
+            navigate("/guest/main");
+          } else {
+            console.log("Error: Guest not found");
+          }
+        })
+        .catch((e) => console.error(e));
+
+      // if guest login failed, try to login as owner
+      loginOwner(data.get("email"))
+        .then((res) => {
+          if (res.data) {
+            navigate("/owner/main");
+          } else {
+            console.log("Error: Owner not found");
+          }
+        })
+        .catch((e) => console.error(e));
       console.log(userCredential);
     } catch (error) {
       setShowError(true);
