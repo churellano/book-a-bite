@@ -26,6 +26,7 @@ let port = process.env.PORT || 8080;
 
 // use this for local dev
 const createTcpPool = async (config) => {
+  // @ts-ignore
   return Knex({
     client: "pg",
     connection: {
@@ -59,7 +60,7 @@ app.use(async (req, res, next) => {
     pool = await createPool();
     next();
   } catch (err) {
-    logger.error(err);
+    console.error(err);
     return next(err);
   }
 });
@@ -78,13 +79,14 @@ app.use(
     name: "session",
     secret: "secure-pwd", // TODO: change this to env vat for security
     resave: false,
+    // @ts-ignore
     maxAge: 30 * 60 * 1000, // 30 minutes
   })
 );
 
 app.post("/api/addGuest", async (req, res) => {
   try {
-    result = await pool
+    let result = await pool
       .insert([
         {
           fname: req.body.fname,
@@ -104,7 +106,7 @@ app.post("/api/addGuest", async (req, res) => {
 
 app.post("/api/addOwner", async (req, res) => {
   try {
-    result = await pool
+    let result = await pool
       .insert([
         {
           fname: req.body.fname,
@@ -126,6 +128,7 @@ app.post("/api/guest/login", async (req, res) => {
     let row = await pool("guests").where("email", req.body.email).select("*");
     if (row.length == 1) {
       let guest = row[0];
+      // @ts-ignore
       req.session.usr = guest;
       console.log("Logged in user:", guest);
       res.json(guest);
@@ -146,6 +149,7 @@ app.post("/api/owner/login", async (req, res) => {
     let row = await pool("owners").where("email", req.body.email).select("*");
     if (row.length == 1) {
       let owner = row[0];
+      // @ts-ignore
       req.session.usr = owner;
       console.log("Logged in user:", owner);
       res.json(owner);
