@@ -131,11 +131,11 @@ export default function OwnerRestaurantMap() {
     </TabPanel>
   );
 
-  const restaurantMap = {
-    rows,
-    columns,
-    tables
-  }
+  // const restaurantMap = {
+  //   rows,
+  //   columns,
+  //   tables
+  // }
 
   const CreateRestaurantMapTabPanel = () => (
     <TabPanel value="1">
