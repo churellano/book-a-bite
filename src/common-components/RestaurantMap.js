@@ -25,7 +25,7 @@ export default function RestaurantMap({
   let displayCells = cells;
 
   const cellsFromTables = Utility.createCellsArray(rows, columns);
-  if (tables && tables.length) {
+  if (isGuestMode && tables && tables.length) {
     tables.forEach(table => {
       cellsFromTables.forEach(cell => {
         table.cells.forEach(tableCell => {

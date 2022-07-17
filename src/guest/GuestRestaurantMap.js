@@ -18,6 +18,7 @@ const MOCK_RESTAURANT_MAP = {
     {
       id: 1,
       restaurantId: 1,
+      name: 'Table 1',
       capacity: 3,
       cells: [
         {
@@ -46,6 +47,7 @@ const MOCK_RESTAURANT_MAP = {
     {
       id: 2,
       restaurantId: 1,
+      name: 'Table 2',
       capacity: 6,
       cells: [
         {
@@ -94,6 +96,9 @@ const MOCK_RESERVATIONS = [
 ];
 
 function createAvailableTimes(
+  restaurantId,
+  tableId,
+  tableName,
   openingTime,
   closingTime,
   reservationInterval,
@@ -112,8 +117,15 @@ function createAvailableTimes(
     const bookingMinute = Math.floor((reservationStartTime - bookingHour) * 60);
     bookingTime.setHours(bookingHour);
     bookingTime.setMinutes(bookingMinute);
+
+    const availableTime = {
+      restaurantId,
+      tableId,
+      tableName,
+      bookingTime
+    };
     
-    availableTimes.push(bookingTime);
+    availableTimes.push(availableTime);
   }
 
   // Remove available times that conflict with current reservations
@@ -125,7 +137,8 @@ function createAvailableTimes(
     const endTimeMinutesInHours = endTimeHour - Math.floor(endTimeHour);
     const endTimeInHours = endTimeHour + endTimeMinutesInHours;
 
-    availableTimes = availableTimes.filter(time => {
+    availableTimes = availableTimes.filter(a => {
+      const time = a.bookingTime;
       const timeInHours = time.getHours() + Utility.minutesToHours(time.getMinutes());
       return timeInHours < startTimeInHours || endTimeInHours <= timeInHours;
     });
@@ -142,10 +155,14 @@ export default function GuestRestaurantMap() {
   // Show available times for clicked table
   const onCellClick = (clickedCell) => (clickObject) => {
     const tableId = clickedCell.tableId;
+    const tableName = MOCK_RESTAURANT_MAP.tables.find(table => table.id === tableId).name;
 
     // TODO: Make get request to back end for reservations at this restaurant at this table
     const reservationsResult = MOCK_RESERVATIONS.filter(reservation => reservation.tableId === tableId);
     const times = createAvailableTimes(
+      MOCK_RESTAURANT_MAP.id,
+      tableId,
+      tableName,
       MOCK_RESTAURANT_MAP.openingTime,
       MOCK_RESTAURANT_MAP.closingTime,
       MOCK_RESTAURANT_MAP.reservationInterval,
@@ -154,7 +171,7 @@ export default function GuestRestaurantMap() {
     );
 
     setAvailableTimes(times);
-  }
+  };
 
   return (
     <>
