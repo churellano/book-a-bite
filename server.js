@@ -10,33 +10,34 @@ let app = express();
 let port = process.env.PORT || 8080;
 
 // use this for prod
-// const createTcpPool = async (config) => {
-//   return Knex({
-//     client: "pg",
-//     connection: {
-//       user: process.env.DB_USER,
-//       password: process.env.DB_PASS,
-//       database: process.env.DB_NAME,
-//       host: process.env.DB_HOST, // uses internal private IP
-//       port: process.env.DB_PORT,
-//     },
-//     ...config,
-//   });
-// };
-
-// use this for local dev
 const createTcpPool = async (config) => {
-  // @ts-ignore
-  return Knex({
-    client: "pg",
-    connection: {
-      user: "postgres",
-      password: "12345",
-      database: "main-db",
-      host: "34.170.246.86", // uses external public IP
-    },
-    ...config,
-  });
+  if (process.env.NODE_ENV === "production") {
+    console.log("debug: in production");
+    // @ts-ignore
+    return Knex({
+      client: "pg",
+      connection: {
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: process.env.DB_NAME,
+        host: process.env.DB_HOST, // uses internal private IP
+        port: process.env.DB_PORT,
+      },
+      ...config,
+    });
+  } else {
+    // @ts-ignore
+    return Knex({
+      client: "pg",
+      connection: {
+        user: "postgres",
+        password: "12345",
+        database: "main-db",
+        host: "34.170.246.86", // uses external public IP
+      },
+      ...config,
+    });
+  }
 };
 
 const createPool = async () => {
