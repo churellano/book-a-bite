@@ -2,12 +2,16 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Button, Grid } from "@mui/material";
 import { Box } from "@mui/material";
+import { auth } from "../firebase-config";
+import { onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 import Navbar from "../common-components/Navbar";
 import RestaurantListItem from "../common-components/RestaurantListItem";
 
 export default function OwnerMain() {
   const [restraurants, setRestraurants] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -19,7 +23,8 @@ export default function OwnerMain() {
       .catch((err) => console.error(err));
   }, []);
 
-  const addRestaurant = () => {};
+
+  const addRestaurant = () => { };
   return (
     <div>
       <Navbar isGuestMode={false} />
