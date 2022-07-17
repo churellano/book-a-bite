@@ -9,7 +9,6 @@ import GuestSignUp from "./login/GuestSignUp";
 import OwnerSignUp from "./login/OwnerSignUp";
 import OwnerMain from "./owner/OwnerMain";
 import OwnerRestaurantMap from "./owner/OwnerRestaurantMap";
-// import { auth } from "../firebase-config";
 
 function App() {
   return (
@@ -18,16 +17,38 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/signupGuest" element={<GuestSignUp />} />
         <Route path="/signupRestaurant" element={<OwnerSignUp />} />
-        <Route path="/guest/main" element={
-          (JSON.parse(localStorage.getItem("isLoggedIn")) && !JSON.parse(localStorage.getItem("isOwner"))) && <GuestMain />} />
-        <Route path="/guest/profile" element={(JSON.parse(localStorage.getItem("isLoggedIn")) && !JSON.parse(localStorage.getItem("isOwner"))) && <GuestProfile />} />
-        <Route path="/guest/restaurant/map" element={(JSON.parse(localStorage.getItem("isLoggedIn")) && !JSON.parse(localStorage.getItem("isOwner"))) && <GuestRestaurantMap />} />
+        <Route path="/guest/main"
+          element={(JSON.parse(localStorage.getItem("isLoggedIn"))
+            && !JSON.parse(localStorage.getItem("isOwner")))
+            && <GuestMain />}
+        />
+        <Route path="/guest/profile"
+          element={(JSON.parse(localStorage.getItem("isLoggedIn"))
+            && !JSON.parse(localStorage.getItem("isOwner")))
+            && <GuestProfile />}
+        />
+        <Route path="/guest/restaurant/map"
+          element={(JSON.parse(localStorage.getItem("isLoggedIn"))
+            && !JSON.parse(localStorage.getItem("isOwner")))
+            && <GuestRestaurantMap />}
+        />
         <Route
           path="/guest/currentBookings"
-          element={(JSON.parse(localStorage.getItem("isLoggedIn")) && !JSON.parse(localStorage.getItem("isOwner"))) && <GuestCurrentBookings />}
+          element={(JSON.parse(localStorage.getItem("isLoggedIn"))
+            && !JSON.parse(localStorage.getItem("isOwner")))
+            && <GuestCurrentBookings />}
         />
-        <Route path="/owner/main" element={(JSON.parse(localStorage.getItem("isLoggedIn")) && JSON.parse(localStorage.getItem("isOwner"))) && <OwnerMain />} />
-        <Route path="/owner/map/create" element={(JSON.parse(localStorage.getItem("isLoggedIn")) && JSON.parse(localStorage.getItem("isOwner"))) && <OwnerRestaurantMap />} />
+        <Route path="/owner/main"
+          element={
+            (JSON.parse(localStorage.getItem("isLoggedIn"))
+              && JSON.parse(localStorage.getItem("isOwner")))
+            && <OwnerMain />}
+        />
+        <Route path="/owner/map/create"
+          element={(JSON.parse(localStorage.getItem("isLoggedIn"))
+            && JSON.parse(localStorage.getItem("isOwner")))
+            && <OwnerRestaurantMap />}
+        />
       </Routes>
     </BrowserRouter>
   );

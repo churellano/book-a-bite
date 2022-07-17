@@ -18,14 +18,13 @@ export default function Login() {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setTimeout(() => {
         if (currentUser !== null) {
-          console.log(`user ${auth.currentUser.email} is logged in as a ${JSON.parse(localStorage.getItem("isOwner")) ? "Owner" : "Guest"}`);
-          console.log("REFRESH PAGE if logged in but blank page")
+          // console.log(`user ${auth.currentUser.email} is logged in as a ${JSON.parse(localStorage.getItem("isOwner")) ? "Owner" : "Guest"}`);
+          autoNavigateIfLoggedIn();
         } else {
           console.log("No User is signed in");
           localStorage.setItem("isLoggedIn", "false");
         }
-      }, 1000);
-      autoNavigateIfLoggedIn();
+      }, 500);
     });
     return () => { // prevents repeated calls
       unsubscribe();
@@ -35,8 +34,14 @@ export default function Login() {
   const autoNavigateIfLoggedIn = () => {
     if (JSON.parse(localStorage.getItem("isLoggedIn")) && !JSON.parse(localStorage.getItem("isOwner"))) {
       navigate("/guest/main");
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } else if (JSON.parse(localStorage.getItem("isLoggedIn")) && JSON.parse(localStorage.getItem("isOwner"))) {
       navigate("/owner/main");
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } else {
       console.log("cannot auto-navigate since not logged in");
     }
@@ -68,7 +73,6 @@ export default function Login() {
             );
             localStorage.setItem("isLoggedIn", "true");
             localStorage.setItem("isOwner", "false");
-            console.log("successful login as Guest");
             console.log(userCredential);
             setTimeout(() => {
               navigate("/guest/main");
@@ -91,7 +95,6 @@ export default function Login() {
             );
             localStorage.setItem("isLoggedIn", "true");
             localStorage.setItem("isOwner", "true");
-            console.log("successful login as Owner");
             console.log(userCredential);
             setTimeout(() => {
               navigate("/owner/main");
@@ -109,7 +112,7 @@ export default function Login() {
   const displayClientError = (msg) => {
     setErrorMsg(msg);
     setShowError(true);
-    console.log(msg);
+    console.warn(msg);
   };
 
   return (

@@ -19,14 +19,13 @@ export default function GuestSignUp() {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setTimeout(() => {
         if (currentUser !== null) {
-          console.log(`user ${auth.currentUser.email} is logged in as a ${JSON.parse(localStorage.getItem("isOwner")) ? "Owner" : "Guest"}`);
-          console.log("REFRESH PAGE if logged in but blank page")
+          // console.log(`user ${auth.currentUser.email} is logged in as a ${JSON.parse(localStorage.getItem("isOwner")) ? "Owner" : "Guest"}`);
+          autoNavigateIfLoggedIn();
         } else {
           console.log("No User is signed in");
           localStorage.setItem("isLoggedIn", "false");
         }
-      }, 1000);
-      autoNavigateIfLoggedIn();
+      }, 500);
     });
     return () => { // prevents repeated calls
       unsubscribe();
@@ -36,8 +35,14 @@ export default function GuestSignUp() {
   const autoNavigateIfLoggedIn = () => {
     if (JSON.parse(localStorage.getItem("isLoggedIn")) && !JSON.parse(localStorage.getItem("isOwner"))) {
       navigate("/guest/main");
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } else if (JSON.parse(localStorage.getItem("isLoggedIn")) && JSON.parse(localStorage.getItem("isOwner"))) {
       navigate("/owner/main");
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } else {
       console.log("cannot auto-navigate since not logged in");
     }
@@ -51,26 +56,28 @@ export default function GuestSignUp() {
   };
 
   const register = async (data) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        data.get("email"),
-        data.get("password")
-      );
-      // Add guest to DB
-      addGuest(data)
-        .then((res) => {
-          console.log("New Guest Account Created!", res);
-          console.log(userCredential);
-          navigate("/");
-        })
-        .catch((err) => console.error(err));
-    } catch (error) {
-      setShowError(true);
-      setErrorMsg(error.message);
-      console.log(error.message);
-    }
+    // Add guest to DB
+    addGuest(data)
+      .then(async (res) => {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          data.get("email"),
+          data.get("password")
+        );
+        console.log(userCredential);
+        console.log("New Guest Account Created!", res);
+        navigate("/");
+      })
+      .catch((error) => {
+        displayClientError(error.message);
+      });
     // to access logged in user: $auth.currentUser.email
+  };
+
+  const displayClientError = (msg) => {
+    setErrorMsg(msg);
+    setShowError(true);
+    console.warn(msg);
   };
 
   return (
