@@ -1,19 +1,15 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Grid, Typography } from "@mui/material";
 
 import Navbar from "../common-components/Navbar";
 import RestaurantListItem from "../common-components/RestaurantListItem";
+import { getCurrentBookingsGuest } from "../api/api";
 
 export default function GuestCurrentBookings(props) {
   const [restraurants, setRestraurants] = useState([]);
 
   useEffect(() => {
-    axios
-      // .get("http://localhost:8080/api/guest/currentBookings")
-      .get(
-        "https://cmpt-372-project.uc.r.appspot.com/api/guest/currentBookings"
-      )
+    getCurrentBookingsGuest()
       .then((res) => {
         setRestraurants(res.data);
       })
