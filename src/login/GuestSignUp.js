@@ -1,18 +1,44 @@
-import React from "react";
-import { Box, Container, Paper, Grid, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Container, Paper, Grid, Typography, Alert } from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
+import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { auth } from "../firebase-config";
+import { useNavigate } from "react-router-dom";
 
 export default function GuestSignUp() {
+  const [showError, setShowError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
+
   const submit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      fname: data.get("firstname"),
-      lname: data.get("lastname"),
-      phone: data.get("phone"),
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    setErrorMsg(false);
+    // TODO: Save user fname, lname, phone in DB
+    const email = data.get("email");
+    const password = data.get("password");
+    register(email, password);
+    // console.log({
+    //   fname: data.get("firstname"),
+    //   lname: data.get("lastname"),
+    //   phone: data.get("phone"),
+    //   email: data.get("email"),
+    //   password: data.get("password"),
+    // });
+  };
+
+  const register = async (registerEmail, registerPassword) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, registerEmail, registerPassword);
+      navigate("/");
+      console.log("New Guest Account Created!")
+      console.log(userCredential);
+    } catch (error) {
+      setShowError(true);
+      setErrorMsg(error.message);
+      console.log(error.message);
+    }
+    // to access logged in user: $auth.currentUser.email
   };
 
   return (
@@ -31,6 +57,8 @@ export default function GuestSignUp() {
           <Typography variant="h4" component="div" mb={3}>
             Sign up
           </Typography>
+
+          {showError && <Alert severity="error">{errorMsg}</Alert>}
 
           <Box component="form" onSubmit={submit}>
             <Grid container spacing={2}>
