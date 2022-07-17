@@ -1,12 +1,16 @@
 import { Grid, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { auth } from "../firebase-config";
+import { onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 import Navbar from "../common-components/Navbar";
 import RestaurantListItem from "../common-components/RestaurantListItem";
 
 export default function GuestMain() {
   const [restraurants, setRestraurants] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -17,6 +21,7 @@ export default function GuestMain() {
       })
       .catch((err) => console.error(err));
   }, []);
+
 
   return (
     <div>

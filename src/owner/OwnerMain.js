@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { Button, Grid } from "@mui/material";
 import { Box } from "@mui/material";
+import { auth } from "../firebase-config";
+import { onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 import Navbar from "../common-components/Navbar";
 import RestaurantListItem from "../common-components/RestaurantListItem";
@@ -84,6 +87,7 @@ const MOCK_RESTAURANT = {
 
 export default function OwnerMain() {
   const [restraurants, setRestraurants] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getAllRestaurantsOwner()
@@ -94,13 +98,13 @@ export default function OwnerMain() {
   }, []);
 
   const addRestaurant = async () => {
-    try {
-      let res = await addRestaurantOwner(MOCK_RESTAURANT);
-      console.log("Added new restaurant", res);
-      window.location.reload();
-    } catch (err) {
-      console.error(err);
-    }
+    // try {
+    //   let res = await addRestaurantOwner(MOCK_RESTAURANT);
+    //   console.log("Added new restaurant", res);
+    //   window.location.reload();
+    // } catch (err) {
+    //   console.error(err);
+    // }
   };
 
   return (

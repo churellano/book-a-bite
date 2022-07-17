@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Container, Paper, Grid, Typography, Alert } from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
 import {
@@ -13,6 +13,35 @@ export default function OwnerSignUp() {
   const [showError, setShowError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
+
+  // listen for login state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setTimeout(() => {
+        if (currentUser !== null) {
+          console.log(`user ${auth.currentUser.email} is logged in as a ${JSON.parse(localStorage.getItem("isOwner")) ? "Owner" : "Guest"}`);
+          console.log("REFRESH PAGE if logged in but blank page")
+        } else {
+          console.log("No User is signed in");
+          localStorage.setItem("isLoggedIn", "false");
+        }
+      }, 1000);
+      autoNavigateIfLoggedIn();
+    });
+    return () => { // prevents repeated calls
+      unsubscribe();
+    };
+  }, []);
+
+  const autoNavigateIfLoggedIn = () => {
+    if (JSON.parse(localStorage.getItem("isLoggedIn")) && !JSON.parse(localStorage.getItem("isOwner"))) {
+      navigate("/guest/main");
+    } else if (JSON.parse(localStorage.getItem("isLoggedIn")) && JSON.parse(localStorage.getItem("isOwner"))) {
+      navigate("/owner/main");
+    } else {
+      console.log("cannot auto-navigate since not logged in");
+    }
+  };
 
   const submit = (event) => {
     event.preventDefault();
