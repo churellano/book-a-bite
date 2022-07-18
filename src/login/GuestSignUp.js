@@ -72,8 +72,8 @@ export default function GuestSignUp() {
           data.get("password")
         );
         console.log("New Guest Account Created!", res);
-        localStorage.setItem("isOwner", "false");
-        localStorage.setItem("isLoggedIn", "true");
+        // localStorage.setItem("isOwner", "false");
+        // localStorage.setItem("isLoggedIn", "true");
         navigate("/");
       })
       .catch((error) => {

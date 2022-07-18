@@ -71,8 +71,8 @@ export default function OwnerSignUp() {
           data.get("password")
         );
         console.log("New Owner Account Created!", res);
-        localStorage.setItem("isOwner", "true");
-        localStorage.setItem("isLoggedIn", "true");
+        // localStorage.setItem("isOwner", "true");
+        // localStorage.setItem("isLoggedIn", "true");
         navigate("/");
       })
       .catch((error) => {
