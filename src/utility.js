@@ -9,7 +9,7 @@ export default class Utility {
     )
   );
 
-  static minutesToHours = (minutes) => +(minutes / 60).toFixed(2);
+  static minutesToHours = (minutes) => Math.round(minutes * 100 / 60) / 100;
 
   static formatTimeTo12HourString = (date) => {
     // Change hour 0 to 12 midnight if needed
@@ -65,5 +65,12 @@ export default class Utility {
     } else {
       return days[0];
     }
+  }
+
+  static timeStringToHours = (time) => {
+    const hour = parseInt(time.split(':')[0], 10);
+    const minute = parseInt(time.split(':')[1], 10);
+
+    return hour + (Math.round((minute * 100 / 60)) / 100);
   }
 };

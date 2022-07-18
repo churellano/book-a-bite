@@ -9,6 +9,8 @@ import GuestSignUp from "./login/GuestSignUp";
 import OwnerSignUp from "./login/OwnerSignUp";
 import OwnerMain from "./owner/OwnerMain";
 import OwnerRestaurantMap from "./owner/OwnerRestaurantMap";
+import OwnerRestaurantProfile from "./owner/OwnerRestaurantProfile";
+import OwnerRestaurantDetails from "./owner/OwnerRestaurantDetails";
 
 function App() {
   return (
@@ -25,7 +27,7 @@ function App() {
           element={<GuestCurrentBookings />}
         />
         <Route path="/owner/main" element={<OwnerMain />} />
-        <Route path="/owner/map/create" element={<OwnerRestaurantMap />} />
+        <Route path="/owner/restaurant/details" element={<OwnerRestaurantDetails />} />
       </Routes>
     </BrowserRouter>
   );
