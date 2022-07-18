@@ -8,8 +8,8 @@ import { useState } from "react";
 import Navbar from "../common-components/Navbar";
 import OwnerRestaurantProfile from "./OwnerRestaurantProfile"
 import OwnerRestaurantMap from "./OwnerRestaurantMap";
-import axios from "axios";
 import Utility from "../utility";
+import { addRestaurantOwner } from "../api/api";
 
 const DEFAULT_ROWS = 10;
 const DEFAULT_COLUMNS = 10;
@@ -78,6 +78,11 @@ export default function OwnerRestaurantDetails() {
       };
 
       console.log('Saving restaurant: ', restaurant);
+
+      const result = await addRestaurantOwner(restaurant);
+
+      console.log('saveRestaurantDetails result: ', result);
+
     } catch (error) {
       console.error('Error: Failed to create restaurant');
     }
