@@ -59,16 +59,6 @@ export default function OwnerRestaurantMap({
     setIsCreatingTable(false);
   };
 
-  // TODO: make post request to back end to save
-  const saveRestaurantMap = () => {
-    const restaurantMap = {
-      rows,
-      columns,
-      tables
-    };
-    console.log('Debug: Saving ', restaurantMap);
-  };
-
   // Mark cells as being part of a table
   const onCellClick = (clickedCell) => (clickObject) => {
     if (isCreatingTable) {
@@ -166,12 +156,6 @@ export default function OwnerRestaurantMap({
             Cancel Table
           </Button>
         </ButtonGroup>
-        <Button
-          variant="outlined"
-          onClick={saveRestaurantMap}
-          disabled={isCreatingTable}>
-          Save Restaurant Map
-        </Button>
       </Box>
       <Box my={2}>
         <TextField
