@@ -1,24 +1,25 @@
-import { Box, Container, Button, ButtonGroup, TextField, Typography } from "@mui/material";
+import { Box, Button, ButtonGroup, TextField, Typography } from "@mui/material";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { useState } from "react";
 
-import Navbar from "../common-components/Navbar";
 import RestaurantMap from "../common-components/RestaurantMap";
 import Utility from "../utility";
 
-const DEFAULT_ROWS = 10;
-const DEFAULT_COLUMNS = 10;
-
-export default function OwnerRestaurantMap() {
-  const [rows, setRows] = useState(DEFAULT_ROWS);
-  const [columns, setColumns] = useState(DEFAULT_COLUMNS)
+export default function OwnerRestaurantMap({
+  rows,
+  columns,
+  tables,
+  tableCapacity,
+  setRows,
+  setColumns,
+  setTables,
+  setTableCapacity
+}) {
   const [cells, setCells] = useState(Utility.createCellsArray(rows, columns));
-  const [tables, setTables] = useState([]);
   const [isCreatingTable, setIsCreatingTable] = useState(false);
-  const [guestCapacity, setGuestCapacity] = useState(0);
   const [tab, setTab] = useState("0");
 
   const startCreatingTable = () => {
@@ -27,7 +28,7 @@ export default function OwnerRestaurantMap() {
 
   const finishTable = () => {
     const table = {
-      capacity: guestCapacity,
+      capacity: tableCapacity,
       cells: cells.filter(c => c.selected === true)
     };
 
@@ -41,7 +42,7 @@ export default function OwnerRestaurantMap() {
 
     // Add new table to array
     setTables([...tables, table])
-    setGuestCapacity(0);
+    setTableCapacity(0);
     setIsCreatingTable(false);
   };
 
@@ -85,7 +86,7 @@ export default function OwnerRestaurantMap() {
     setCells(Utility.createCellsArray(rows, columns));
     setTables([]);
     setIsCreatingTable(false);
-    setGuestCapacity(0);
+    setTableCapacity(0);
     setTab("1");
   };
 
@@ -155,7 +156,7 @@ export default function OwnerRestaurantMap() {
             variant="contained"
             color="success"
             onClick={finishTable}
-            disabled={!isCreatingTable || !guestCapacity}>
+            disabled={!isCreatingTable || !tableCapacity}>
             Finish Table
           </Button>
           <Button
@@ -180,8 +181,8 @@ export default function OwnerRestaurantMap() {
             shrink: true,
           }}
           variant="standard"
-          value={guestCapacity}
-          onChange={e => setGuestCapacity(e.target.value)}
+          value={tableCapacity}
+          onChange={e => setTableCapacity(e.target.value)}
           disabled={!isCreatingTable}
         />
       </Box>
@@ -196,21 +197,16 @@ export default function OwnerRestaurantMap() {
     </TabPanel>
   );
 
-  return (
-    <div>
-      <Navbar isGuestMode={false} />
-      <Container>
-        <TabContext value={tab}>
-          <Box>
-            <TabList onChange={(e, newTab) => setTab(newTab)}>
-              <Tab label="Set Map Dimensions" value="0" />
-              <Tab label="Create Table Layout" value="1" disabled={cells.length !== rows * columns} />
-            </TabList>
-          </Box>
-          <SetDimensionsTabPanel />
-          <CreateRestaurantMapTabPanel />
-        </TabContext>
-      </Container>
-    </div>
+return (
+    <TabContext value={tab}>
+      <Box>
+        <TabList onChange={(e, newTab) => setTab(newTab)}>
+          <Tab label="Set Map Dimensions" value="0" />
+          <Tab label="Create Table Layout" value="1" disabled={cells.length !== rows * columns} />
+        </TabList>
+      </Box>
+      <SetDimensionsTabPanel />
+      <CreateRestaurantMapTabPanel />
+    </TabContext>
   );
 }
