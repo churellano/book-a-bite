@@ -97,14 +97,8 @@ export default function OwnerMain() {
       .catch((err) => console.error(err));
   }, []);
 
-  const addRestaurant = async () => {
-    // try {
-    //   let res = await addRestaurantOwner(MOCK_RESTAURANT);
-    //   console.log("Added new restaurant", res);
-    //   window.location.reload();
-    // } catch (err) {
-    //   console.error(err);
-    // }
+  const addRestaurant = () => {
+    navigate("/owner/restaurant/details");
   };
 
   return (
