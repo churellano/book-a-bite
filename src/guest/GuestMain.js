@@ -1,17 +1,19 @@
 import { Grid, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { auth } from "../firebase-config";
+import { onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 import Navbar from "../common-components/Navbar";
 import RestaurantListItem from "../common-components/RestaurantListItem";
+import { getAllRestaurantsGuest } from "../api/api";
 
 export default function GuestMain() {
   const [restraurants, setRestraurants] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      // .get("http://localhost:8080/api/guest/main")
-      .get("https://cmpt-372-project.uc.r.appspot.com/api/guest/main")
+    getAllRestaurantsGuest()
       .then((res) => {
         setRestraurants(res.data);
       })

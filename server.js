@@ -10,33 +10,34 @@ let app = express();
 let port = process.env.PORT || 8080;
 
 // use this for prod
-// const createTcpPool = async (config) => {
-//   return Knex({
-//     client: "pg",
-//     connection: {
-//       user: process.env.DB_USER,
-//       password: process.env.DB_PASS,
-//       database: process.env.DB_NAME,
-//       host: process.env.DB_HOST, // uses internal private IP
-//       port: process.env.DB_PORT,
-//     },
-//     ...config,
-//   });
-// };
-
-// use this for local dev
 const createTcpPool = async (config) => {
-  // @ts-ignore
-  return Knex({
-    client: "pg",
-    connection: {
-      user: "postgres",
-      password: "12345",
-      database: "main-db",
-      host: "34.170.246.86", // uses external public IP
-    },
-    ...config,
-  });
+  if (process.env.NODE_ENV === "production") {
+    console.log("debug: in production");
+    // @ts-ignore
+    return Knex({
+      client: "pg",
+      connection: {
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: process.env.DB_NAME,
+        host: process.env.DB_HOST, // uses internal private IP
+        port: process.env.DB_PORT,
+      },
+      ...config,
+    });
+  } else {
+    // @ts-ignore
+    return Knex({
+      client: "pg",
+      connection: {
+        user: "postgres",
+        password: "12345",
+        database: "main-db",
+        host: "34.170.246.86", // uses external public IP
+      },
+      ...config,
+    });
+  }
 };
 
 const createPool = async () => {
@@ -159,6 +160,46 @@ app.post("/api/owner/login", async (req, res) => {
       );
       res.json(null);
     }
+  } catch (e) {
+    console.error(e);
+    res.status(500).json();
+  }
+});
+
+app.post("/api/owner/addRestaurant", async (req, res) => {
+  try {
+    let result = await pool
+      .insert([
+        {
+          ownerid: req.body.data.ownerId,
+          name: req.body.data.name,
+          address: req.body.data.address,
+          phone: req.body.data.phone,
+          openingtime: req.body.data.openingTime,
+          closingtime: req.body.data.closingTime,
+          minimumreservationduration: req.body.data.minimumReservationDuration,
+          reservationinterval: req.body.data.reservationInterval,
+          mapnumofrows: req.body.data.mapNumOfRows,
+          mapnumofcols: req.body.data.mapNumOfCols,
+          tables: req.body.data.tables,
+          capacity: req.body.data.capacity,
+        },
+      ])
+      .into("restaurants");
+    console.log("Added new restaurant");
+    res.json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json();
+  }
+});
+
+app.get("/api/owner/getAllRestaurants", async (req, res) => {
+  try {
+    let restaurantsArray = await pool("restaurants")
+      .where("ownerid", req.query.ownerId)
+      .select("*");
+    res.json(restaurantsArray);
   } catch (e) {
     console.error(e);
     res.status(500).json();

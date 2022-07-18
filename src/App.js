@@ -19,15 +19,38 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/signupGuest" element={<GuestSignUp />} />
         <Route path="/signupRestaurant" element={<OwnerSignUp />} />
-        <Route path="/guest/main" element={<GuestMain />} />
-        <Route path="/guest/profile" element={<GuestProfile />} />
-        <Route path="/guest/restaurant/map" element={<GuestRestaurantMap />} />
+        <Route path="/guest/main"
+          element={(JSON.parse(localStorage.getItem("isLoggedIn"))
+            && !JSON.parse(localStorage.getItem("isOwner")))
+            && <GuestMain />}
+        />
+        <Route path="/guest/profile"
+          element={(JSON.parse(localStorage.getItem("isLoggedIn"))
+            && !JSON.parse(localStorage.getItem("isOwner")))
+            && <GuestProfile />}
+        />
+        <Route path="/guest/restaurant/map"
+          element={(JSON.parse(localStorage.getItem("isLoggedIn"))
+            && !JSON.parse(localStorage.getItem("isOwner")))
+            && <GuestRestaurantMap />}
+        />
         <Route
           path="/guest/currentBookings"
-          element={<GuestCurrentBookings />}
+          element={(JSON.parse(localStorage.getItem("isLoggedIn"))
+            && !JSON.parse(localStorage.getItem("isOwner")))
+            && <GuestCurrentBookings />}
         />
-        <Route path="/owner/main" element={<OwnerMain />} />
-        <Route path="/owner/restaurant/details" element={<OwnerRestaurantDetails />} />
+        <Route path="/owner/main"
+          element={
+            (JSON.parse(localStorage.getItem("isLoggedIn"))
+              && JSON.parse(localStorage.getItem("isOwner")))
+            && <OwnerMain />}
+        />
+        <Route path="/owner/restaurant/details"
+          element={(JSON.parse(localStorage.getItem("isLoggedIn"))
+            && JSON.parse(localStorage.getItem("isOwner")))
+            && <OwnerRestaurantDetails />}
+        />
       </Routes>
     </BrowserRouter>
   );

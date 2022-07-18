@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase-config";
 
@@ -18,6 +18,7 @@ import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 
 export default function Navbar(props) {
+  const navigate = useNavigate();
   const pages = props.isGuestMode
     ? [
       { name: "Restaurants", link: "/guest/main" },
@@ -27,9 +28,9 @@ export default function Navbar(props) {
   const settings = props.isGuestMode
     ? [
       { name: "Profile", link: "/guest/profile" },
-      { name: "Logout", link: "/guest/logout" },
+      { name: "Logout", link: "/" },
     ]
-    : [{ name: "Logout", link: "/owner/logout" }];
+    : [{ name: "Logout", link: "/" }];
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -49,20 +50,14 @@ export default function Navbar(props) {
     setAnchorElUser(null);
     if (event.target.innerText === "Logout") {
       logout();
+      localStorage.setItem("isLoggedIn", "false");
+      localStorage.setItem("isOwner", "false");
     }
   };
 
   const logout = async () => {
     await signOut(auth);
   };
-  // // To observe sign in state in console
-  // onAuthStateChanged(auth, (user) => {
-  //   if (user !== null) {
-  //     console.log(`user ${auth.currentUser.email} is already logged in!`);
-  //   } else {
-  //     console.log("No User Signed in (firebase onAuthStateChanged)");
-  //   }
-  // });
 
   return (
     <AppBar position="static" sx={{ mb: 5 }}>

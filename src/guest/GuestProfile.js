@@ -1,17 +1,15 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Box, Typography, Button, TextField } from "@mui/material";
 
 import Navbar from "../common-components/Navbar";
+import { getGuestProfile } from "../api/api";
 
 export default function GuestProfile(props) {
   const [email, setEmail] = useState("");
   const [guest, setGuest] = useState([]);
 
   useEffect(() => {
-    axios
-      // .get("http://localhost:8080/api/guest/profile")
-      .get("https://cmpt-372-project.uc.r.appspot.com/api/guest/profile")
+    getGuestProfile()
       .then((res) => {
         setGuest(res.data);
       })

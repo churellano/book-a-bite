@@ -1,5 +1,14 @@
-import React, { useState } from "react";
-import { Box, Container, Paper, Grid, Typography, Alert } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Container,
+  Paper,
+  Grid,
+  Typography,
+  Alert,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 import { TextField, Button, Link } from "@mui/material";
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase-config";
@@ -9,15 +18,55 @@ import { loginGuest, loginOwner } from "../api/api";
 export default function Login() {
   const [showError, setShowError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [isOwnerChecked, setisOwnerChecked] = useState(false);
   const navigate = useNavigate();
+  const AUTO_NAVIGATE_DELAY = 2000;
 
-  onAuthStateChanged(auth, (user) => {
-    if (user !== null) {
-      console.log(`user ${auth.currentUser.email} is already logged in!`);
+  // listen for login state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setTimeout(() => {
+        if (currentUser !== null) {
+          autoNavigateIfLoggedIn();
+        } else {
+          console.log("No User is signed in");
+          localStorage.setItem("isLoggedIn", "false");
+        }
+      }, 500);
+    });
+    return () => {
+      // prevents repeated calls
+      unsubscribe();
+    };
+  }, []);
+
+  const autoNavigateIfLoggedIn = () => {
+    if (
+      JSON.parse(localStorage.getItem("isLoggedIn")) &&
+      !JSON.parse(localStorage.getItem("isOwner"))
+    ) {
+      navigate("/guest/main");
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    } else if (
+      JSON.parse(localStorage.getItem("isLoggedIn")) &&
+      JSON.parse(localStorage.getItem("isOwner"))
+    ) {
+      navigate("/owner/main");
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } else {
-      console.log("No User Signed in (firebase onAuthStateChanged)");
+      console.log("cannot auto-navigate since not logged in");
     }
-  });
+  };
+
+  // choice of logging in as Guest/Owner
+  const handleCheckboxChange = () => {
+    setisOwnerChecked(!isOwnerChecked);
+    console.log(`isOwner_Checkbox_Checked = ${!isOwnerChecked}`);
+  };
 
   const submit = (event) => {
     event.preventDefault();
@@ -26,43 +75,62 @@ export default function Login() {
     login(data);
   };
 
-  const login = async (data) => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        data.get("email"),
-        data.get("password")
-      );
-      // TODO: Naviagte to correct path (Guest/Restaurant)
-
-      // Retrieve user data from DB and create a session
-      // try to login as a guest
+  const login = (data) => {
+    // try to login as a guest by accessing DB
+    if (!isOwnerChecked) {
       loginGuest(data.get("email"))
-        .then((res) => {
+        .then(async (res) => {
           if (res.data) {
-            navigate("/guest/main");
+            const userCredential = await signInWithEmailAndPassword(
+              auth,
+              data.get("email"),
+              data.get("password")
+            );
+            localStorage.setItem("isLoggedIn", "true");
+            localStorage.setItem("isOwner", "false");
+            // TODO: instead of storing userId in sessionStorage, store userId at the backend using express-session
+            sessionStorage.setItem("userId", res.data.guestid);
+            console.log("successful login as Guest");
+            setTimeout(() => {
+              navigate("/guest/main");
+            }, AUTO_NAVIGATE_DELAY);
           } else {
-            console.log("Error: Guest not found");
+            displayClientError("ERROR: Guest not found in DB");
           }
         })
-        .catch((e) => console.error(e));
-
-      // if guest login failed, try to login as owner
+        .catch((error) => {
+          displayClientError(error.message);
+        });
+    } else {
       loginOwner(data.get("email"))
-        .then((res) => {
+        .then(async (res) => {
           if (res.data) {
-            navigate("/owner/main");
+            const userCredential = await signInWithEmailAndPassword(
+              auth,
+              data.get("email"),
+              data.get("password")
+            );
+            localStorage.setItem("isLoggedIn", "true");
+            localStorage.setItem("isOwner", "true");
+            sessionStorage.setItem("userId", res.data.ownerid); // todo: store userid at the backend instead of here
+            console.log("successful login as Owner");
+            setTimeout(() => {
+              navigate("/owner/main");
+            }, AUTO_NAVIGATE_DELAY);
           } else {
-            console.log("Error: Owner not found");
+            displayClientError("ERROR: Owner not found in DB");
           }
         })
-        .catch((e) => console.error(e));
-      console.log(userCredential);
-    } catch (error) {
-      setShowError(true);
-      setErrorMsg(error.message);
-      console.log(error.message);
+        .catch((error) => {
+          displayClientError(error.message);
+        });
     }
+  };
+
+  const displayClientError = (msg) => {
+    setErrorMsg(msg);
+    setShowError(true);
+    console.warn(msg);
   };
 
   return (
@@ -106,6 +174,13 @@ export default function Login() {
                   required
                 />
               </Grid>
+
+              {/* TODO: align checkbox  */}
+              <FormControlLabel
+                control={<Checkbox onChange={handleCheckboxChange} />}
+                label="Sign in as Owner?"
+              />
+
               <Grid item xs={12} sx={{ mb: 4, mt: 1 }}>
                 <Button fullWidth type="submit" variant="contained">
                   Sign In
@@ -145,7 +220,7 @@ export default function Login() {
                 }}
               >
                 <Link href="/signupRestaurant" variant="body1">
-                  Sign Up as a Restaurant
+                  Sign Up as an Owner
                 </Link>
               </Grid>
             </Grid>
