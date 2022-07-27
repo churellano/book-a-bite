@@ -10,26 +10,50 @@ import Navbar from "../common-components/Navbar";
 import OwnerRestaurantProfile from "./OwnerRestaurantProfile";
 import OwnerRestaurantMap from "./OwnerRestaurantMap";
 import Utility from "../utility";
-import { addRestaurantOwner } from "../api/api";
+import { saveRestaurantOwner } from "../api/api";
+import { useLocation } from "react-router-dom";
 
 const DEFAULT_ROWS = 10;
 const DEFAULT_COLUMNS = 10;
 
 export default function OwnerRestaurantDetails() {
+  let location = useLocation();
+
   const [tab, setTab] = useState("0");
-  const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
-  const [phone, setPhone] = useState("");
-  const [capacity, setCapacity] = useState(0);
-  const [openingTime, setOpeningTime] = useState("00:00");
-  const [closingTime, setClosingTime] = useState("00:00");
-  const [mininumReservationDuration, setMininumReservationDuration] =
-    useState(60);
-  const [reservationInterval, setReservationInterval] = useState(30);
+  const [name, setName] = useState(
+    location.state ? location.state.data.name : ""
+  );
+  const [address, setAddress] = useState(
+    location.state ? location.state.data.address : ""
+  );
+  const [phone, setPhone] = useState(
+    location.state ? location.state.data.phone : ""
+  );
+  const [capacity, setCapacity] = useState(
+    location.state ? location.state.data.capacity : 0
+  );
+  const [openingTime, setOpeningTime] = useState(
+    location.state
+      ? Utility.hoursToTimeString(location.state.data.openingtime)
+      : "00:00"
+  );
+  const [closingTime, setClosingTime] = useState("10:00");
+  const [mininumReservationDuration, setMininumReservationDuration] = useState(
+    location.state
+      ? Math.round(location.state.data.minimumreservationduration * 60)
+      : 60
+  );
+  const [reservationInterval, setReservationInterval] = useState(
+    location.state
+      ? Math.round(location.state.data.reservationinterval * 60)
+      : 30
+  );
 
   const [rows, setRows] = useState(DEFAULT_ROWS);
   const [columns, setColumns] = useState(DEFAULT_COLUMNS);
-  const [tables, setTables] = useState([]);
+  const [tables, setTables] = useState(
+    location.state ? location.state.data.tables : []
+  );
   const [tableCapacity, setTableCapacity] = useState(0);
 
   const navigate = useNavigate();
@@ -67,6 +91,7 @@ export default function OwnerRestaurantDetails() {
   const saveRestaurantDetails = async () => {
     try {
       const restaurant = {
+        restaurantId: location.state ? location.state.data.restaurantid : null,
         ownerId: sessionStorage.getItem("userId"),
         name,
         address,
@@ -85,7 +110,7 @@ export default function OwnerRestaurantDetails() {
 
       console.log("Saving restaurant: ", restaurant);
 
-      const result = await addRestaurantOwner(restaurant);
+      const result = await saveRestaurantOwner(restaurant);
 
       console.log("saveRestaurantDetails result: ", result);
       navigate("/owner/main");
@@ -101,7 +126,7 @@ export default function OwnerRestaurantDetails() {
         <TabContext value={tab}>
           <Box>
             <Button variant="contained" onClick={() => saveRestaurantDetails()}>
-              Create Restaurant
+              Save Restaurant
             </Button>
             <TabList onChange={(e, newTab) => setTab(newTab)}>
               <Tab label="Restaurant information" value="0" />

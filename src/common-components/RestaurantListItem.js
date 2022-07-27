@@ -63,7 +63,12 @@ export default function RestaurantListItem(props) {
           >
             Delete
           </Button>
-          <Button component={Link} to="/admin/restaurantEdit" size="small">
+          <Button
+            component={Link}
+            to={`/owner/restaurant/edit`}
+            state={{ data }}
+            size="small"
+          >
             Edit
           </Button>
         </CardActions>
