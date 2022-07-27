@@ -65,6 +65,8 @@ export default function OwnerSignUp() {
                     data.get('email'),
                     data.get('password')
                 )
+                localStorage.setItem("isOwner", "true");
+                localStorage.setItem("isLoggedIn", "true");
                 navigate('/')
             })
             .catch((error) => {
