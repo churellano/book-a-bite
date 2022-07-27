@@ -34,8 +34,8 @@ export const loginOwner = (email) => {
     })
 }
 
-export const addRestaurantOwner = (data) => {
-    return axios.post(`${apiUrl}/api/owner/addRestaurant`, {
+export const saveRestaurantOwner = (data) => {
+    return axios.post(`${apiUrl}/api/owner/saveRestaurant`, {
         data: data,
     })
 }

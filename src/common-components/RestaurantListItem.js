@@ -72,7 +72,8 @@ export default function RestaurantListItem(props) {
                     </Button>
                     <Button
                         component={Link}
-                        to="/admin/restaurantEdit"
+                        to={`/owner/restaurant/edit`}
+                        state={{ data }}
                         size="small"
                     >
                         Edit
