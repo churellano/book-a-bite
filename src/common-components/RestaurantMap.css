@@ -1,14 +1,14 @@
 .restaurant-map {
-  display: grid;
-  background-color: #000000;
-  border: 1px solid #000000;
-  gap: 1px;
-  width: 60%;
+    display: grid;
+    background-color: #000000;
+    border: 1px solid #000000;
+    gap: 1px;
+    width: 60%;
 }
 
 .table-cell {
-  background-color: #ffffff;
-  display: flex;
-  aspect-ratio: 1;
-  font-size: 75%;
+    background-color: #ffffff;
+    display: flex;
+    aspect-ratio: 1;
+    font-size: 75%;
 }
