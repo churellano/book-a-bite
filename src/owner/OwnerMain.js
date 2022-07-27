@@ -28,7 +28,7 @@ export default function OwnerMain() {
             <Navbar isGuestMode={false} />
             <Grid container spacing={2}>
                 {restraurants.map((rest) => (
-                    <Grid item xs={12} sm={6}>
+                    <Grid key={rest.address} item xs={12} sm={6}>
                         <RestaurantListItem data={rest} page="ownerMain" />
                     </Grid>
                 ))}
