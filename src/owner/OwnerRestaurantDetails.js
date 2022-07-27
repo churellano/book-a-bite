@@ -1,10 +1,10 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Box, Button, Container } from '@mui/material'
 import Tab from '@mui/material/Tab'
 import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
 import TabPanel from '@mui/lab/TabPanel'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 import Navbar from '../common-components/Navbar'
 import OwnerRestaurantProfile from './OwnerRestaurantProfile'
@@ -84,14 +84,11 @@ export default function OwnerRestaurantDetails() {
                 tables: JSON.stringify(tables),
             }
 
-            console.log('Saving restaurant: ', restaurant)
+            await addRestaurantOwner(restaurant)
 
-            const result = await addRestaurantOwner(restaurant)
-
-            console.log('saveRestaurantDetails result: ', result)
             navigate('/owner/main')
         } catch (error) {
-            console.error('Error: Failed to create restaurant')
+            console.error('Failed to create restaurant', error)
         }
     }
 

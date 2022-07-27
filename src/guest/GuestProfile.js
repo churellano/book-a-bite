@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react'
 import { Box, Typography, Button, TextField } from '@mui/material'
 
 import Navbar from '../common-components/Navbar'
-import { getGuestProfile } from '../api/api'
+import { getProfileGuest } from '../api/api'
 
 export default function GuestProfile(props) {
     const [email, setEmail] = useState('')
     const [guest, setGuest] = useState([])
 
     useEffect(() => {
-        getGuestProfile()
+        getProfileGuest()
             .then((res) => {
                 setGuest(res.data)
             })

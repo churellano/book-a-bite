@@ -1,4 +1,4 @@
-import { Box, InputAdornment, TextField, Typography } from '@mui/material'
+import { Box, TextField, Typography } from '@mui/material'
 
 export default function OwnerRestaurantProfile({
     name,

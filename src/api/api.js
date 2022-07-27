@@ -58,7 +58,7 @@ export const deleteRestaurantOwner = (restaurantId) => {
     })
 }
 
-export const getGuestProfile = () => {
+export const getProfileGuest = () => {
     return axios.get(`${apiUrl}/api/guest/profile`)
 }
 

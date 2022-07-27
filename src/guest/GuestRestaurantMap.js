@@ -1,5 +1,6 @@
-import { Box, Container, Typography } from '@mui/material'
 import { useState } from 'react'
+import { Box, Container, Typography } from '@mui/material'
+
 import Navbar from '../common-components/Navbar'
 import RestaurantMap from '../common-components/RestaurantMap'
 import Utility from '../utility'

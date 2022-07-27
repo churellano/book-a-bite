@@ -1,7 +1,6 @@
 import * as React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { signOut, onAuthStateChanged } from 'firebase/auth'
-import { auth } from '../firebase-config'
+import { Link } from 'react-router-dom'
+import { signOut } from 'firebase/auth'
 
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
@@ -17,8 +16,9 @@ import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import AdbIcon from '@mui/icons-material/Adb'
 
+import { auth } from '../firebase-config'
+
 export default function Navbar(props) {
-    const navigate = useNavigate()
     const pages = props.isGuestMode
         ? [
               { name: 'Restaurants', link: '/guest/main' },
@@ -31,6 +31,7 @@ export default function Navbar(props) {
               { name: 'Logout', link: '/' },
           ]
         : [{ name: 'Logout', link: '/' }]
+
     const [anchorElNav, setAnchorElNav] = React.useState(null)
     const [anchorElUser, setAnchorElUser] = React.useState(null)
 
@@ -56,7 +57,11 @@ export default function Navbar(props) {
     }
 
     const logout = async () => {
-        await signOut(auth)
+        try {
+            await signOut(auth)
+        } catch (err) {
+            console.error(err)
+        }
     }
 
     return (

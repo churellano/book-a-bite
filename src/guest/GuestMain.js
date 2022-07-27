@@ -1,8 +1,5 @@
-import { Grid, Typography } from '@mui/material'
 import { useState, useEffect } from 'react'
-import { auth } from '../firebase-config'
-import { onAuthStateChanged } from 'firebase/auth'
-import { useNavigate } from 'react-router-dom'
+import { Grid, Typography } from '@mui/material'
 
 import Navbar from '../common-components/Navbar'
 import RestaurantListItem from '../common-components/RestaurantListItem'
@@ -10,7 +7,6 @@ import { getAllRestaurantsGuest } from '../api/api'
 
 export default function GuestMain() {
     const [restraurants, setRestraurants] = useState([])
-    const navigate = useNavigate()
 
     useEffect(() => {
         getAllRestaurantsGuest()

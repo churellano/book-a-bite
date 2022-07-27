@@ -8,8 +8,6 @@ import Login from './login/Login'
 import GuestSignUp from './login/GuestSignUp'
 import OwnerSignUp from './login/OwnerSignUp'
 import OwnerMain from './owner/OwnerMain'
-import OwnerRestaurantMap from './owner/OwnerRestaurantMap'
-import OwnerRestaurantProfile from './owner/OwnerRestaurantProfile'
 import OwnerRestaurantDetails from './owner/OwnerRestaurantDetails'
 
 function App() {
