@@ -206,6 +206,17 @@ app.get("/api/owner/getAllRestaurants", async (req, res) => {
   }
 });
 
+app.delete("/api/owner/deleteRestaurant", async (req, res) => {
+  try {
+    let result = await pool("restaurants")
+      .where("restaurantid", req.body.restaurantId)
+      .delete();
+    res.json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json();
+  }
+});
 app.get("/api/guest/main", (req, res) => {
   res.json(restaurants);
 });

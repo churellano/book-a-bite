@@ -50,6 +50,14 @@ export const getAllRestaurantsOwner = () => {
   });
 };
 
+export const deleteRestaurantOwner = (restaurantId) => {
+  return axios.delete(`${apiUrl}/api/owner/deleteRestaurant`, {
+    data: {
+      restaurantId: restaurantId,
+    },
+  });
+};
+
 export const getGuestProfile = () => {
   return axios.get(`${apiUrl}/api/guest/profile`);
 };

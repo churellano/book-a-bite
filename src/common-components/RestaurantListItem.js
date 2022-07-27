@@ -5,12 +5,18 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import { deleteRestaurantOwner } from "../api/api";
 
 export default function RestaurantListItem(props) {
   let data = props.data;
 
-  const onRestaurantDelete = () => {
-    // TODO: handle delete
+  const onRestaurantDelete = async (restaurantid) => {
+    try {
+      await deleteRestaurantOwner(restaurantid);
+      window.location.reload();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const onDeleteBooking = () => {
@@ -51,7 +57,10 @@ export default function RestaurantListItem(props) {
 
       {props.page === "ownerMain" && (
         <CardActions>
-          <Button onClick={onRestaurantDelete} size="small">
+          <Button
+            onClick={() => onRestaurantDelete(data.restaurantid)}
+            size="small"
+          >
             Delete
           </Button>
           <Button component={Link} to="/admin/restaurantEdit" size="small">
