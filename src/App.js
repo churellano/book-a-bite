@@ -9,6 +9,7 @@ import GuestSignUp from './login/GuestSignUp'
 import OwnerSignUp from './login/OwnerSignUp'
 import OwnerMain from './owner/OwnerMain'
 import OwnerRestaurantDetails from './owner/OwnerRestaurantDetails'
+import OnwerRestaurantProfileEdit from './owner/OwnerRestaurantProfileEdit'
 
 function App() {
     return (
@@ -68,6 +69,15 @@ function App() {
                         JSON.parse(localStorage.getItem('isLoggedIn')) &&
                         JSON.parse(localStorage.getItem('isOwner')) && (
                             <OwnerRestaurantDetails />
+                        )
+                    }
+                />
+                <Route
+                    path="/owner/restaurant/edit"
+                    element={
+                        JSON.parse(localStorage.getItem('isLoggedIn')) &&
+                        JSON.parse(localStorage.getItem('isOwner')) && (
+                            <OnwerRestaurantProfileEdit />
                         )
                     }
                 />

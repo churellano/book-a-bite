@@ -71,4 +71,18 @@ export default class Utility {
 
         return hour + Math.round((minute * 100) / 60) / 100
     }
+
+    static hoursToTimeString = (hours) => {
+        hours = parseFloat(hours)
+        let hour = Math.floor(hours)
+        let minute = Math.round((hours - hour) * 60)
+        if (hour.toString().length === 1) {
+            hour = '0' + hour.toString()
+        }
+        if (minute.toString().length === 1) {
+            minute = '0' + minute.toString()
+        }
+
+        return `${hour}:${minute}`
+    }
 }

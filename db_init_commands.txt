@@ -29,5 +29,6 @@ CREATE TABLE restaurants (
     mapNumOfCols INTEGER, 
     tables jsonb,
     capacity INTEGER,
-    FOREIGN KEY(ownerID) REFERENCES owners(ownerID)
+    FOREIGN KEY(ownerID) REFERENCES owners(ownerID),
+    PRIMARY KEY (restaurantID)
 );
