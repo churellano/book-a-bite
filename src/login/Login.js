@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
     Box,
     Container,
@@ -11,36 +12,18 @@ import {
 } from '@mui/material'
 import { TextField, Button, Link } from '@mui/material'
 import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
+
 import { auth } from '../firebase-config'
-import { useNavigate } from 'react-router-dom'
 import { loginGuest, loginOwner } from '../api/api'
 
 export default function Login() {
-    const [showError, setShowError] = useState(false)
     const [errorMsg, setErrorMsg] = useState('')
+    const [showError, setShowError] = useState(false)
     const [isOwnerChecked, setisOwnerChecked] = useState(false)
     const navigate = useNavigate()
     const AUTO_NAVIGATE_DELAY = 2000
 
-    // listen for login state changes
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setTimeout(() => {
-                if (currentUser !== null) {
-                    autoNavigateIfLoggedIn()
-                } else {
-                    console.log('No User is signed in')
-                    localStorage.setItem('isLoggedIn', 'false')
-                }
-            }, 500)
-        })
-        return () => {
-            // prevents repeated calls
-            unsubscribe()
-        }
-    }, [])
-
-    const autoNavigateIfLoggedIn = () => {
+    const autoNavigateIfLoggedIn = useCallback(() => {
         if (
             JSON.parse(localStorage.getItem('isLoggedIn')) &&
             !JSON.parse(localStorage.getItem('isOwner'))
@@ -58,14 +41,30 @@ export default function Login() {
                 window.location.reload()
             }, 500)
         } else {
-            console.log('cannot auto-navigate since not logged in')
+            console.error('cannot auto-navigate since not logged in')
         }
-    }
+    }, [navigate])
+
+    // listen for login state changes
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setTimeout(() => {
+                if (currentUser !== null) {
+                    autoNavigateIfLoggedIn()
+                } else {
+                    localStorage.setItem('isLoggedIn', 'false')
+                }
+            }, 500)
+        })
+        return () => {
+            // prevents repeated calls
+            unsubscribe()
+        }
+    }, [autoNavigateIfLoggedIn])
 
     // choice of logging in as Guest/Owner
     const handleCheckboxChange = () => {
         setisOwnerChecked(!isOwnerChecked)
-        console.log(`isOwner_Checkbox_Checked = ${!isOwnerChecked}`)
     }
 
     const submit = (event) => {
@@ -81,7 +80,7 @@ export default function Login() {
             loginGuest(data.get('email'))
                 .then(async (res) => {
                     if (res.data) {
-                        const userCredential = await signInWithEmailAndPassword(
+                        await signInWithEmailAndPassword(
                             auth,
                             data.get('email'),
                             data.get('password')
@@ -90,7 +89,6 @@ export default function Login() {
                         localStorage.setItem('isOwner', 'false')
                         // TODO: instead of storing userId in sessionStorage, store userId at the backend using express-session
                         sessionStorage.setItem('userId', res.data.guestid)
-                        console.log('successful login as Guest')
                         setTimeout(() => {
                             navigate('/guest/main')
                         }, AUTO_NAVIGATE_DELAY)
@@ -105,7 +103,7 @@ export default function Login() {
             loginOwner(data.get('email'))
                 .then(async (res) => {
                     if (res.data) {
-                        const userCredential = await signInWithEmailAndPassword(
+                        await signInWithEmailAndPassword(
                             auth,
                             data.get('email'),
                             data.get('password')
@@ -113,7 +111,6 @@ export default function Login() {
                         localStorage.setItem('isLoggedIn', 'true')
                         localStorage.setItem('isOwner', 'true')
                         sessionStorage.setItem('userId', res.data.ownerid) // todo: store userid at the backend instead of here
-                        console.log('successful login as Owner')
                         setTimeout(() => {
                             navigate('/owner/main')
                         }, AUTO_NAVIGATE_DELAY)

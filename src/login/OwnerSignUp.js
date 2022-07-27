@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Box, Container, Paper, Grid, Typography, Alert } from '@mui/material'
 import { TextField, Button, Link } from '@mui/material'
 import {
     createUserWithEmailAndPassword,
     onAuthStateChanged,
 } from 'firebase/auth'
+
 import { auth } from '../firebase-config'
-import { useNavigate } from 'react-router-dom'
 import { addOwner } from '../api/api'
 
 export default function OwnerSignUp() {
@@ -14,15 +15,31 @@ export default function OwnerSignUp() {
     const [errorMsg, setErrorMsg] = useState('')
     const navigate = useNavigate()
 
+    const autoNavigateIfLoggedIn = useCallback(() => {
+        let isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn'))
+        let isOwner = JSON.parse(localStorage.getItem('isOwner'))
+        if (isLoggedIn && !isOwner) {
+            navigate('/guest/main')
+            setTimeout(() => {
+                window.location.reload()
+            }, 500)
+        } else if (isLoggedIn && isOwner) {
+            navigate('/owner/main')
+            setTimeout(() => {
+                window.location.reload()
+            }, 500)
+        } else {
+            console.error('cannot auto-navigate since not logged in')
+        }
+    }, [navigate])
+
     // listen for login state changes
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setTimeout(() => {
                 if (currentUser !== null) {
-                    // console.log(`user ${auth.currentUser.email} is logged in as a ${JSON.parse(localStorage.getItem("isOwner")) ? "Owner" : "Guest"}`);
                     autoNavigateIfLoggedIn()
                 } else {
-                    console.log('No User is signed in')
                     localStorage.setItem('isLoggedIn', 'false')
                 }
             }, 500)
@@ -31,29 +48,7 @@ export default function OwnerSignUp() {
             // prevents repeated calls
             unsubscribe()
         }
-    }, [])
-
-    const autoNavigateIfLoggedIn = () => {
-        if (
-            JSON.parse(localStorage.getItem('isLoggedIn')) &&
-            !JSON.parse(localStorage.getItem('isOwner'))
-        ) {
-            navigate('/guest/main')
-            setTimeout(() => {
-                window.location.reload()
-            }, 500)
-        } else if (
-            JSON.parse(localStorage.getItem('isLoggedIn')) &&
-            JSON.parse(localStorage.getItem('isOwner'))
-        ) {
-            navigate('/owner/main')
-            setTimeout(() => {
-                window.location.reload()
-            }, 500)
-        } else {
-            console.log('cannot auto-navigate since not logged in')
-        }
-    }
+    }, [autoNavigateIfLoggedIn])
 
     const submit = (event) => {
         event.preventDefault()
@@ -65,14 +60,11 @@ export default function OwnerSignUp() {
     const register = async (data) => {
         addOwner(data)
             .then(async (res) => {
-                const userCredential = await createUserWithEmailAndPassword(
+                await createUserWithEmailAndPassword(
                     auth,
                     data.get('email'),
                     data.get('password')
                 )
-                console.log('New Owner Account Created!', res)
-                // localStorage.setItem("isOwner", "true");
-                // localStorage.setItem("isLoggedIn", "true");
                 navigate('/')
             })
             .catch((error) => {
