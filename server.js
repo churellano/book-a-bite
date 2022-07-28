@@ -247,8 +247,14 @@ app.delete('/api/owner/deleteRestaurant', async (req, res) => {
         res.status(500).json()
     }
 })
-app.get('/api/guest/main', (req, res) => {
-    res.json(restaurants)
+app.get('/api/guest/getAllRestaurants', async (req, res) => {
+    try {
+        let restaurantsArray = await pool('restaurants').select('*')
+        res.json(restaurantsArray)
+    } catch (e) {
+        console.error(e)
+        res.status(500).json()
+    }
 })
 
 app.get('/api/guest/currentBookings', (req, res) => {

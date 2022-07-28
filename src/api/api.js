@@ -63,7 +63,7 @@ export const getProfileGuest = () => {
 }
 
 export const getAllRestaurantsGuest = () => {
-    return axios.get(`${apiUrl}/api/guest/main`)
+    return axios.get(`${apiUrl}/api/guest/getAllRestaurants`)
 }
 
 export const getCurrentBookingsGuest = () => {

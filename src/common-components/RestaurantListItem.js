@@ -48,7 +48,11 @@ export default function RestaurantListItem(props) {
 
             {props.page === 'guestMain' && (
                 <CardActions>
-                    <Button component={Link} to="/guest/book" size="small">
+                    <Button
+                        component={Link}
+                        to="/guest/restaurant/map"
+                        size="small"
+                    >
                         Book
                     </Button>
                 </CardActions>
