@@ -52,7 +52,6 @@ export default function RestaurantListItem(props) {
                         component={Link}
                         to="/guest/restaurant/map"
                         size="small"
-                        state={{ data }}
                     >
                         Book
                     </Button>
