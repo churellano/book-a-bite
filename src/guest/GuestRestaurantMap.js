@@ -1,81 +1,11 @@
 import { useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Box, Container, Typography } from '@mui/material'
 
 import Navbar from '../common-components/Navbar'
 import RestaurantMap from '../common-components/RestaurantMap'
 import Utility from '../utility'
 import GuestTableAvailableTimes from './GuestTableAvailableTimes'
-
-const MOCK_RESTAURANT_MAP = {
-    // capacity: 50,
-    restaurantId: 1,
-    openingTime: 12,
-    closingTime: 22,
-    mininumReservationDuration: 1.5,
-    reservationInterval: 0.5,
-    rows: 10,
-    columns: 10,
-    tables: [
-        {
-            id: 1,
-            restaurantId: 1,
-            name: 'Table 1',
-            capacity: 3,
-            cells: [
-                {
-                    tableId: 1,
-                    x: 0,
-                    y: 0,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-                {
-                    tableId: 1,
-                    x: 1,
-                    y: 0,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-                {
-                    tableId: 1,
-                    x: 2,
-                    y: 0,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-            ],
-        },
-        {
-            id: 2,
-            restaurantId: 1,
-            name: 'Table 2',
-            capacity: 6,
-            cells: [
-                {
-                    tableId: 2,
-                    x: 7,
-                    y: 9,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-                {
-                    tableId: 2,
-                    x: 8,
-                    y: 9,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-                {
-                    tableId: 2,
-                    x: 9,
-                    y: 9,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-            ],
-        },
-    ],
-}
 
 const MOCK_RESERVATIONS = [
     {
@@ -158,15 +88,18 @@ function createAvailableTimes(
 export default function GuestRestaurantMap() {
     const [availableTimes, setAvailableTimes] = useState([])
 
+    const location = useLocation()
+    const [restaurantData, setRestaurantData] = useState(location.state.data)
+
     const cells = Utility.createCellsArray(
-        MOCK_RESTAURANT_MAP.rows,
-        MOCK_RESTAURANT_MAP.columns
+        restaurantData.mapnumofrows,
+        restaurantData.mapnumofcols
     )
 
     // Show available times for clicked table
     const onCellClick = (clickedCell) => (clickObject) => {
         const tableId = clickedCell.tableId
-        const tableName = MOCK_RESTAURANT_MAP.tables.find(
+        const tableName = restaurantData.tables.find(
             (table) => table.id === tableId
         ).name
 
@@ -175,13 +108,13 @@ export default function GuestRestaurantMap() {
             (reservation) => reservation.tableId === tableId
         )
         const times = createAvailableTimes(
-            MOCK_RESTAURANT_MAP.id,
+            restaurantData.id,
             tableId,
             tableName,
-            MOCK_RESTAURANT_MAP.openingTime,
-            MOCK_RESTAURANT_MAP.closingTime,
-            MOCK_RESTAURANT_MAP.reservationInterval,
-            MOCK_RESTAURANT_MAP.mininumReservationDuration,
+            restaurantData.openingTime,
+            restaurantData.closingTime,
+            restaurantData.reservationInterval,
+            restaurantData.mininumReservationDuration,
             reservationsResult
         )
 
@@ -210,9 +143,9 @@ export default function GuestRestaurantMap() {
                         Select a table and time
                     </Typography>
                     <RestaurantMap
-                        rows={MOCK_RESTAURANT_MAP.rows}
-                        columns={MOCK_RESTAURANT_MAP.columns}
-                        tables={MOCK_RESTAURANT_MAP.tables}
+                        rows={restaurantData.mapnumofrows}
+                        columns={restaurantData.mapnumofcols}
+                        tables={restaurantData.tables}
                         cells={cells}
                         onCellClick={onCellClick}
                         isGuestMode={true}
