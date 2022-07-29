@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
-import GuestCurrentBookings from './guest/GuestCurrentBookings'
+import GuestCurrentReservations from './guest/GuestCurrentReservations'
 import GuestMain from './guest/GuestMain'
 import GuestProfile from './guest/GuestProfile'
 import GuestRestaurantMap from './guest/GuestRestaurantMap'
@@ -46,11 +46,11 @@ function App() {
                     }
                 />
                 <Route
-                    path="/guest/currentBookings"
+                    path="/guest/getReservationsWithRestaurantsData"
                     element={
                         JSON.parse(localStorage.getItem('isLoggedIn')) &&
                         !JSON.parse(localStorage.getItem('isOwner')) && (
-                            <GuestCurrentBookings />
+                            <GuestCurrentReservations />
                         )
                     }
                 />
