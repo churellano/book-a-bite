@@ -247,6 +247,9 @@ app.delete('/api/owner/deleteRestaurant', async (req, res) => {
         res.status(500).json()
     }
 })
+
+// ******** GUEST USER MODE APIS ******** //
+
 app.get('/api/guest/getAllRestaurants', async (req, res) => {
     try {
         let restaurantsArray = await pool('restaurants').select('*')
@@ -257,8 +260,79 @@ app.get('/api/guest/getAllRestaurants', async (req, res) => {
     }
 })
 
-app.get('/api/guest/currentBookings', (req, res) => {
-    res.json(restaurants)
+app.get('/api/guest/getReservationsByRestaurantId', async (req, res) => {
+    try {
+        let row = await pool('reservations')
+            .where({
+                restaurantid: req.query.restaurantId,
+                tableid: req.query.tableId,
+            })
+            .select('*')
+        res.json(row)
+    } catch (e) {
+        console.error(e)
+        res.status(500).json()
+    }
+})
+
+app.post('/api/guest/addReservation', async (req, res) => {
+    try {
+        let result = await pool
+            .insert([
+                {
+                    guestid: req.body.data.guestId,
+                    tableid: req.body.data.tableId,
+                    restaurantid: req.body.data.restaurantId,
+                    bookingtime: req.body.data.bookingTime,
+                    duration: req.body.data.duration,
+                    note: req.body.data.note,
+                },
+            ])
+            .into('reservations')
+        console.log('Added new reservation', result)
+        res.json(result)
+    } catch (e) {
+        console.error(e)
+        res.status(500).json()
+    }
+})
+
+app.delete('/api/guest/deleteReservation', async (req, res) => {
+    try {
+        let result = await pool('reservations')
+            .where('reservationid', req.body.reservationId)
+            .delete()
+        res.json(result)
+    } catch (e) {
+        console.error(e)
+        res.status(500).json()
+    }
+})
+
+app.get('/api/guest/getReservationsWithRestaurantsData', async (req, res) => {
+    try {
+        let reservations = await pool('reservations')
+            .where({
+                guestid: req.query.guestId,
+            })
+            .select('*')
+        let promisesArray = []
+        reservations.forEach(async (reservation) => {
+            let restaurantPromise = pool('restaurants')
+                .where('restaurantid', reservation.restaurantid)
+                .select('*')
+            promisesArray.push(restaurantPromise)
+        })
+        let restaurants = await Promise.all(promisesArray)
+        restaurants.forEach((restaurant, index) => {
+            restaurant[0].bookingtime = reservations[index].bookingtime
+            restaurant[0].reservationid = reservations[index].reservationid
+        })
+        res.json(restaurants.flat(1))
+    } catch (e) {
+        console.error(e)
+        res.status(500).json()
+    }
 })
 
 app.get('/api/guest/profile', (req, res) => {

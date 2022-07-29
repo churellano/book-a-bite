@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 
-import { deleteRestaurantOwner } from '../api/api'
+import { deleteReservationGuest, deleteRestaurantOwner } from '../api/api'
 
 export default function RestaurantListItem(props) {
     let data = props.data
@@ -20,8 +20,22 @@ export default function RestaurantListItem(props) {
         }
     }
 
-    const onDeleteBooking = () => {
-        // TODO: handle delete
+    const onDeleteBooking = async (reservationid) => {
+        try {
+            await deleteReservationGuest(reservationid)
+            window.location.reload()
+        } catch (e) {
+            console.error(e)
+        }
+    }
+
+    const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
     }
 
     return (
@@ -44,6 +58,15 @@ export default function RestaurantListItem(props) {
                         Booking Status:{' '}
                     </Typography>
                 )}
+                {props.page === 'guestCurrentReservations' && (
+                    <Typography color="text.secondary" sx={{ mt: 4 }}>
+                        Booking Time:
+                        {new Date(data.bookingtime).toLocaleDateString(
+                            'en-CA',
+                            options
+                        )}
+                    </Typography>
+                )}
             </CardContent>
 
             {props.page === 'guestMain' && (
@@ -52,15 +75,19 @@ export default function RestaurantListItem(props) {
                         component={Link}
                         to="/guest/restaurant/map"
                         size="small"
+                        state={data}
                     >
                         Book
                     </Button>
                 </CardActions>
             )}
 
-            {props.page === 'guestProfile' && (
+            {props.page === 'guestCurrentReservations' && (
                 <CardActions>
-                    <Button onClick={onDeleteBooking} size="small">
+                    <Button
+                        onClick={() => onDeleteBooking(data.reservationid)}
+                        size="small"
+                    >
                         Delete Booking
                     </Button>
                 </CardActions>

@@ -3,6 +3,7 @@ import { Box, List, ListItemButton, Paper, Typography } from '@mui/material'
 
 import GuestConfirmReservationModal from './GuestConfirmReservationModal'
 import Utility from '../utility'
+import { addReservationGuest } from '../api/api'
 
 export default function GuestTableAvailableTimes({ availableTimes }) {
     const [open, setOpen] = useState(false)
@@ -13,8 +14,23 @@ export default function GuestTableAvailableTimes({ availableTimes }) {
         setOpen(true)
     }
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
         // TODO: Reserve time
+        try {
+            // pass reservation data in this form:
+            let data = {
+                guestId: sessionStorage.getItem('userId'),
+                tableId: selectedTime.tableId,
+                restaurantId: 1, // get this from parent component GuestRestaurantMap
+                bookingTime: selectedTime.bookingTime,
+                duration: 2, // get this from parent component GuestRestaurantMap
+                note: 'test note', // get this from input
+            }
+            await addReservationGuest(data)
+            setOpen(false)
+        } catch (e) {
+            console.error(e)
+        }
         console.log('Debug: Confirming reservation')
     }
 
