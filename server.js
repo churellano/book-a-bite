@@ -214,7 +214,29 @@ app.post('/api/owner/saveRestaurant', async (req, res) => {
                         capacity: req.body.data.capacity,
                     },
                 ])
-                .into('restaurants')
+                .returning([
+                    'restaurantid',
+                    'tables'
+                ])
+                .into('restaurants');
+
+            const restaurantId = result[0].restaurantid;
+            const tables = result[0].tables;
+
+            console.log('type', typeof req.body.data.tables)
+            console.log('restaurantId', restaurantId)
+            console.log('tables before', tables);
+
+            // Update tables with restaurantId from newly inserted restaurant
+            tables.forEach(t => t.restaurantId = restaurantId);
+
+            console.log('updatedTables', tables);
+            await pool('restaurants')
+                .update({
+                    tables: JSON.stringify(tables)
+                })
+                .catch((err) => console.log(err))
+            
             console.log('Added new restaurant')
         }
         res.status(200).json()

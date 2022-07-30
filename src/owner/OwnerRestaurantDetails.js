@@ -16,7 +16,7 @@ const DEFAULT_ROWS = 10
 const DEFAULT_COLUMNS = 10
 
 export default function OwnerRestaurantDetails() {
-    let location = useLocation()
+    const location = useLocation()
 
     const [tab, setTab] = useState('0')
     const [name, setName] = useState(
@@ -36,7 +36,11 @@ export default function OwnerRestaurantDetails() {
             ? Utility.hoursToTimeString(location.state.data.openingtime)
             : '00:00'
     )
-    const [closingTime, setClosingTime] = useState('10:00')
+    const [closingTime, setClosingTime] = useState(
+      location.state
+            ? Utility.hoursToTimeString(location.state.data.closingtime)
+            : '00:00'
+    )
     const [minimumReservationDuration, setMinimumReservationDuration] =
         useState(
             location.state
@@ -50,12 +54,25 @@ export default function OwnerRestaurantDetails() {
             ? Math.round(location.state.data.reservationinterval * 60)
             : 30
     )
-    const [rows, setRows] = useState(DEFAULT_ROWS)
-    const [columns, setColumns] = useState(DEFAULT_COLUMNS)
+    const [rows, setRows] = useState(
+        location.state ?
+            location.state.data.mapnumofrows :
+            DEFAULT_ROWS
+    )
+    const [columns, setColumns] = useState(
+        location.state ?
+            location.state.data.mapnumofcols :
+            DEFAULT_COLUMNS)
     const [tables, setTables] = useState(
         location.state ? location.state.data.tables : []
     )
     const [tableCapacity, setTableCapacity] = useState(0)
+
+    const [isCreatingNewTableLayout, setIsCreatingNewTableLayout] = useState(
+      location.state && location.state.data.restaurantid ? 
+      false : 
+      true
+    );
 
     const navigate = useNavigate()
 
@@ -79,14 +96,17 @@ export default function OwnerRestaurantDetails() {
     }
 
     const ownerRestaurantMapProps = {
+        restaurantId: location.state ? location.state.data.restaurantid : null,
         rows,
         columns,
         tables,
         tableCapacity,
+        isCreatingNewTableLayout,
         setRows,
         setColumns,
         setTables,
         setTableCapacity,
+        setIsCreatingNewTableLayout
     }
 
     const saveRestaurantDetails = async () => {
@@ -120,18 +140,53 @@ export default function OwnerRestaurantDetails() {
         }
     }
 
+    const resetRestaurantMap = () => {
+      setIsCreatingNewTableLayout(true);
+    }
+
+    const cancelResetRestaurantMap = () => {
+        setIsCreatingNewTableLayout(false);
+
+        // Workaround to ensure fields are restored to previous state modified before cancellation
+        window.location.reload();
+    }
+
     return (
         <div>
             <Navbar isGuestMode={false} />
             <Container>
                 <TabContext value={tab}>
-                    <Box>
+                    <Box sx={{
+                      '& > .MuiButton-root': {
+                        mr: 1
+                      }
+                    }}>
                         <Button
                             variant="contained"
                             onClick={() => saveRestaurantDetails()}
+                            color="success"
                         >
                             Save Restaurant
                         </Button>
+                        {tab === '1' ? <Button
+                            variant="contained"
+                            color={
+                                isCreatingNewTableLayout ?
+                                'error' :
+                                'primary'
+                            }
+                            onClick={
+                                isCreatingNewTableLayout ?
+                                cancelResetRestaurantMap :
+                                resetRestaurantMap
+                            }
+                        >
+                            {
+                                isCreatingNewTableLayout ?
+                                'Cancel New Restaurant Map' :
+                                'Create New Restaurant Map'
+                            }
+                        </Button> : null}
                         <TabList onChange={(e, newTab) => setTab(newTab)}>
                             <Tab label="Restaurant information" value="0" />
                             <Tab label="Restaurant map" value="1" />

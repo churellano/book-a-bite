@@ -1,11 +1,29 @@
 export default class Utility {
     static createCellsArray = (rows, columns) =>
         Array.from({ length: rows * columns }).map((e, i) => ({
+            tableId: null,
             x: i % columns,
             y: (i - (i % columns)) / columns,
             selected: false,
-            isPartOfNewTable: false,
+            isPartOfFinishedTable: false,
         }))
+
+    static copyTableCellsToCellsArray = (tables, cells) => {
+        const newCells = [...cells];
+        tables.forEach((table) => {
+            newCells.forEach((cell) => {
+                table.cells.forEach((tableCell) => {
+                    if (cell.x === tableCell.x && cell.y === tableCell.y) {
+                        cell.selected = tableCell?.selected
+                        cell.isPartOfFinishedTable = tableCell?.isPartOfFinishedTable
+                        cell.tableId = table?.id
+                    }
+                })
+            })
+        })
+
+        return newCells;
+    }
 
     static minutesToHours = (minutes) => Math.round((minutes * 100) / 60) / 100
 
