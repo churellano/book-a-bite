@@ -1,18 +1,15 @@
 import { useEffect, useState } from 'react'
-import { Box, Button, ButtonGroup, TextField, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 import Tab from '@mui/material/Tab'
 import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
-import TabPanel from '@mui/lab/TabPanel'
-
-import RestaurantMap from '../common-components/RestaurantMap'
 import Utility from '../utility'
 import SetDimensionsTabPanel from './SetDimensionsTabPanel'
 import CreateRestaurantMapTabPanel from './CreateRestaurantMapTabPanel'
 import EditRestaurantMapTabPanel from './EditRestaurantMapTabPanel'
 
-const MAX_ROWS = 100;
-const MAX_COLUMNS = 100;
+const MAX_ROWS = 30;
+const MAX_COLUMNS = 30;
 
 export default function OwnerRestaurantMap({
     restaurantId,
@@ -25,7 +22,6 @@ export default function OwnerRestaurantMap({
     setColumns,
     setTables,
     setTableCapacity,
-    setIsCreatingNewTableLayout
 }) {
     const [cells, setCells] = useState(
         Utility.copyTableCellsToCellsArray(

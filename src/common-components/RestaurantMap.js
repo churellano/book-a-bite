@@ -49,9 +49,7 @@ export default function RestaurantMap({
                         backgroundColor: getCellColour(cell),
                         cursor: getCursorStyle(mode, cell)
                     }}
-                >
-                    {`(${cell.x}, ${cell.y})`}
-                </div>
+                ></div>
             ))}
         </Box>
     )
