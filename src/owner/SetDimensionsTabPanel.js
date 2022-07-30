@@ -30,7 +30,7 @@ export default function SetDimensionsTabPanel({
                 }}
                 variant="outlined"
                 value={rows}
-                error={rows <= 0}
+                error={!isRowsValid}
                 helperText={!isRowsValid ? `Width must be an integer in the range [0, ${maxRows}]` : null}
                 onChange={handleChange}
             />
@@ -43,7 +43,7 @@ export default function SetDimensionsTabPanel({
                 }}
                 variant="outlined"
                 value={columns}
-                error={columns <= 0}
+                error={!isColumnsValid}
                 helperText={!isColumnsValid ? `Length must be an integer in the range [0, ${maxColumns}]` : null}
                 onChange={handleChange}
             />
