@@ -5,6 +5,8 @@ import Navbar from '../common-components/Navbar'
 import RestaurantMap from '../common-components/RestaurantMap'
 import Utility from '../utility'
 import GuestTableAvailableTimes from './GuestTableAvailableTimes'
+import { useLocation } from 'react-router-dom'
+import { getReservationsByRestaurantIdGuest } from '../api/api'
 
 const MOCK_RESTAURANT_MAP = {
     // capacity: 50,
@@ -104,7 +106,7 @@ function createAvailableTimes(
     closingTime,
     reservationInterval,
     mininumReservationDuration,
-    currentReservations
+    getReservationsWithRestaurantsData
 ) {
     const latestReservationTime = closingTime - mininumReservationDuration
     let availableTimes = []
@@ -132,7 +134,7 @@ function createAvailableTimes(
     }
 
     // Remove available times that conflict with current reservations
-    currentReservations.forEach((currentReservation) => {
+    getReservationsWithRestaurantsData.forEach((currentReservation) => {
         const startTimeHour = currentReservation.bookingTime.getHours()
         const startTimeInHours =
             startTimeHour +
@@ -157,6 +159,9 @@ function createAvailableTimes(
 
 export default function GuestRestaurantMap() {
     const [availableTimes, setAvailableTimes] = useState([])
+    // TODO: replace MOCK_RESTAURANT_MAP by restaurantData
+    // this gets all info about the selected data
+    // const [restaurantData, setRestaurantData] = useState(useLocation().state)
 
     const cells = Utility.createCellsArray(
         MOCK_RESTAURANT_MAP.rows,
@@ -171,6 +176,10 @@ export default function GuestRestaurantMap() {
         ).name
 
         // TODO: Make get request to back end for reservations at this restaurant at this table
+        // const reservationsResult = getReservationsByRestaurantIdGuest(
+        //     restaurantData.restaurantid,
+        //     tableId
+        // )
         const reservationsResult = MOCK_RESERVATIONS.filter(
             (reservation) => reservation.tableId === tableId
         )

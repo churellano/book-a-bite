@@ -3,13 +3,13 @@ import { Grid, Typography } from '@mui/material'
 
 import Navbar from '../common-components/Navbar'
 import RestaurantListItem from '../common-components/RestaurantListItem'
-import { getCurrentBookingsGuest } from '../api/api'
+import { getCurrentReservationsGuest } from '../api/api'
 
-export default function GuestCurrentBookings(props) {
+export default function GuestCurrentReservations(props) {
     const [restraurants, setRestraurants] = useState([])
 
     useEffect(() => {
-        getCurrentBookingsGuest()
+        getCurrentReservationsGuest(sessionStorage.getItem('userId'))
             .then((res) => {
                 setRestraurants(res.data)
             })
@@ -20,12 +20,20 @@ export default function GuestCurrentBookings(props) {
         <div>
             <Navbar isGuestMode={true} />
             <Typography variant="h4" component="div" mb={3} textAlign="center">
-                Your Current Bookings
+                Your Current Reservations
             </Typography>
             <Grid container spacing={2}>
                 {restraurants.map((rest) => (
-                    <Grid key={rest.address} item xs={12} sm={6}>
-                        <RestaurantListItem data={rest} page="guestProfile" />
+                    <Grid
+                        key={rest.address + rest.reservationid}
+                        item
+                        xs={12}
+                        sm={6}
+                    >
+                        <RestaurantListItem
+                            data={rest}
+                            page="guestCurrentReservations"
+                        />
                     </Grid>
                 ))}
             </Grid>
