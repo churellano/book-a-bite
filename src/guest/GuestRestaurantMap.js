@@ -212,10 +212,9 @@ export default function GuestRestaurantMap() {
                     <RestaurantMap
                         rows={MOCK_RESTAURANT_MAP.rows}
                         columns={MOCK_RESTAURANT_MAP.columns}
-                        tables={MOCK_RESTAURANT_MAP.tables}
                         cells={cells}
                         onCellClick={onCellClick}
-                        isGuestMode={true}
+                        mode='view'
                     />
                 </Box>
                 {availableTimes.length ? (
