@@ -8,96 +8,6 @@ import GuestTableAvailableTimes from './GuestTableAvailableTimes'
 import { useLocation } from 'react-router-dom'
 import { getReservationsByRestaurantIdGuest } from '../api/api'
 
-const MOCK_RESTAURANT_MAP = {
-    // capacity: 50,
-    restaurantId: 1,
-    openingTime: 12,
-    closingTime: 22,
-    mininumReservationDuration: 1.5,
-    reservationInterval: 0.5,
-    rows: 10,
-    columns: 10,
-    tables: [
-        {
-            id: 1,
-            restaurantId: 1,
-            name: 'Table 1',
-            capacity: 3,
-            cells: [
-                {
-                    tableId: 1,
-                    x: 0,
-                    y: 0,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-                {
-                    tableId: 1,
-                    x: 1,
-                    y: 0,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-                {
-                    tableId: 1,
-                    x: 2,
-                    y: 0,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-            ],
-        },
-        {
-            id: 2,
-            restaurantId: 1,
-            name: 'Table 2',
-            capacity: 6,
-            cells: [
-                {
-                    tableId: 2,
-                    x: 7,
-                    y: 9,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-                {
-                    tableId: 2,
-                    x: 8,
-                    y: 9,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-                {
-                    tableId: 2,
-                    x: 9,
-                    y: 9,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-            ],
-        },
-    ],
-}
-
-const MOCK_RESERVATIONS = [
-    {
-        id: 1,
-        restaurantId: 1,
-        userId: 1,
-        tableId: 1,
-        bookingTime: new Date('July 14, 2022 12:00:00'),
-        duration: 2,
-    },
-    {
-        id: 1,
-        restaurantId: 1,
-        userId: 1,
-        tableId: 1,
-        bookingTime: new Date('July 14, 2022 18:30:00'),
-        duration: 2,
-    },
-]
-
 function createAvailableTimes(
     restaurantId,
     tableId,
@@ -142,7 +52,8 @@ function createAvailableTimes(
             startTimeHour +
             Utility.minutesToHours(reservationDate.getMinutes())
 
-        const endTimeHour = startTimeHour + currentReservation.duration
+        const endTimeHour = startTimeHour + (+currentReservation.duration)
+
         const endTimeMinutesInHours = endTimeHour - Math.floor(endTimeHour)
         const endTimeInHours = endTimeHour + endTimeMinutesInHours
 
@@ -156,7 +67,7 @@ function createAvailableTimes(
         })
     })
 
-    return availableTimes
+    return availableTimes;
 }
 
 export default function GuestRestaurantMap() {
@@ -187,25 +98,25 @@ export default function GuestRestaurantMap() {
             )
         )
     );
-    const [selectedTableId, setSelectedTableId] = useState(null);
+    const [selectedTable, setSelectedTable] = useState(null);
 
     const clearSelectedTable = () => {
-        if (selectedTableId !== null) {
+        if (selectedTable !== null) {
             cells.forEach((c) => {
-                if (c.tableId === selectedTableId) {
+                if (c.tableId === selectedTable.id) {
                     c.selected = false;
                 }
             });
         }
 
-        setSelectedTableId(null);
+        setSelectedTable(null);
     };
 
     const markSelectedTable = (tableId) => {
         // Clear previous table selection
-        if (selectedTableId !== null && selectedTableId !== tableId) {
+        if (selectedTable !== null && selectedTable.id !== tableId) {
             cells.forEach((c) => {
-                if (c.tableId === selectedTableId) {
+                if (c.tableId === selectedTable.id) {
                     c.selected = false;
                 }
             });
@@ -218,7 +129,7 @@ export default function GuestRestaurantMap() {
             }
         });
 
-        setSelectedTableId(tableId);
+        setSelectedTable(tables.find(t => t.id === tableId));
         setCells([...cells])
     }
 
@@ -286,6 +197,7 @@ export default function GuestRestaurantMap() {
                         restaurantId={restaurantid}
                         availableTimes={availableTimes}
                         minimumReservationDuration={+minimumreservationduration}
+                        tableCapacity={selectedTable?.capacity}
                         clearSelectedTable={clearSelectedTable}
                     />
                 ) : null}
