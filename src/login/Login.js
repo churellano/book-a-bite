@@ -11,7 +11,7 @@ import {
     Checkbox,
 } from '@mui/material'
 import { TextField, Button, Link } from '@mui/material'
-import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
+import { signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from 'firebase/auth'
 
 import { auth } from '../firebase-config'
 import { loginGuest, loginOwner } from '../api/api'
@@ -20,8 +20,28 @@ export default function Login() {
     const [errorMsg, setErrorMsg] = useState('')
     const [showError, setShowError] = useState(false)
     const [isOwnerChecked, setisOwnerChecked] = useState(false)
+    const [email, setEmail] = useState('')
     const navigate = useNavigate()
     const AUTO_NAVIGATE_DELAY = 2000
+
+    const handleEmailChange = (event) => {
+        setEmail(event.target.value);
+    };
+
+    const handleCheckboxChange = () => {
+        setisOwnerChecked(!isOwnerChecked)
+    }
+
+    const forgotPassword = () => {
+        sendPasswordResetEmail(auth, email)
+            .then(() => {
+                console.log("Password reset email sent!");
+                alert("Password reset email sent! Please check your email for a link")
+            })
+            .catch((error) => {
+                displayFirebaseError(error)
+            });
+    }
 
     const autoNavigateIfLoggedIn = useCallback(() => {
         if (
@@ -41,7 +61,7 @@ export default function Login() {
                 window.location.reload()
             }, 500)
         } else {
-            console.error('cannot auto-navigate since not logged in')
+            console.warn('cannot auto-navigate since not logged in')
         }
     }, [navigate])
 
@@ -57,15 +77,10 @@ export default function Login() {
             }, 500)
         })
         return () => {
-            // prevents repeated calls
             unsubscribe()
         }
     }, [autoNavigateIfLoggedIn])
 
-    // choice of logging in as Guest/Owner
-    const handleCheckboxChange = () => {
-        setisOwnerChecked(!isOwnerChecked)
-    }
 
     const submit = (event) => {
         event.preventDefault()
@@ -75,11 +90,11 @@ export default function Login() {
     }
 
     const login = (data) => {
-        // try to login as a guest by accessing DB
         if (!isOwnerChecked) {
             loginGuest(data.get('email'))
                 .then(async (res) => {
                     if (res.data) {
+                        // firebase auth login
                         await signInWithEmailAndPassword(
                             auth,
                             data.get('email'),
@@ -87,17 +102,18 @@ export default function Login() {
                         )
                         localStorage.setItem('isLoggedIn', 'true')
                         localStorage.setItem('isOwner', 'false')
-                        // TODO: instead of storing userId in sessionStorage, store userId at the backend using express-session
-                        sessionStorage.setItem('userId', res.data.guestid)
+                        sessionStorage.setItem('userId', res.data.guestid) // TODO: instead of storing userId in sessionStorage, store userId at the backend using express-session
                         setTimeout(() => {
                             navigate('/guest/main')
                         }, AUTO_NAVIGATE_DELAY)
                     } else {
-                        displayClientError('ERROR: Guest not found in DB')
+                        // user not found in DB
+                        setErrorMsg("Guest not found")
+                        setShowError(true)
                     }
                 })
                 .catch((error) => {
-                    displayClientError(error.message)
+                    displayFirebaseError(error)
                 })
         } else {
             loginOwner(data.get('email'))
@@ -110,24 +126,36 @@ export default function Login() {
                         )
                         localStorage.setItem('isLoggedIn', 'true')
                         localStorage.setItem('isOwner', 'true')
-                        sessionStorage.setItem('userId', res.data.ownerid) // todo: store userid at the backend instead of here
+                        sessionStorage.setItem('userId', res.data.ownerid) // TODO: store userId at the backend using express-session
                         setTimeout(() => {
                             navigate('/owner/main')
                         }, AUTO_NAVIGATE_DELAY)
                     } else {
-                        displayClientError('ERROR: Owner not found in DB')
+                        // user not found in DB
+                        setErrorMsg("Owner not found")
+                        setShowError(true)
                     }
                 })
                 .catch((error) => {
-                    displayClientError(error.message)
+                    displayFirebaseError(error.message)
                 })
         }
     }
 
-    const displayClientError = (msg) => {
-        setErrorMsg(msg)
+    const displayFirebaseError = (e) => {
+        switch (e.code) {
+            case "auth/wrong-password":
+                setErrorMsg("Incorrect password. Please try again")
+                break;
+            case "auth/user-not-found":
+                setErrorMsg("Please enter an existing email to reset your password")
+                break;
+            default:
+                setErrorMsg("Unhandled Firebase Error")
+                console.warn(e.message)
+                break;
+        }
         setShowError(true)
-        console.warn(msg)
     }
 
     return (
@@ -159,6 +187,8 @@ export default function Login() {
                                     label="Email"
                                     type="email"
                                     required
+                                    value={email}
+                                    onChange={handleEmailChange}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -172,15 +202,18 @@ export default function Login() {
                                 />
                             </Grid>
 
-                            {/* TODO: align checkbox  */}
                             <FormControlLabel
                                 control={
-                                    <Checkbox onChange={handleCheckboxChange} />
+                                    <Checkbox
+                                        onChange={handleCheckboxChange}
+                                        sx={{ ml: 2 }}
+                                    />
                                 }
+
                                 label="Sign in as Owner?"
                             />
 
-                            <Grid item xs={12} sx={{ mb: 4, mt: 1 }}>
+                            <Grid item xs={12} sx={{ mt: 1 }}>
                                 <Button
                                     fullWidth
                                     type="submit"
@@ -191,8 +224,8 @@ export default function Login() {
                             </Grid>
 
                             <Grid item xs={6} sm={6}>
-                                <Link href="#" variant="body1">
-                                    Reset Your Password
+                                <Link href="#" variant="body1" onClickCapture={forgotPassword}>
+                                    Forgot Your Password?
                                 </Link>
                             </Grid>
                             <Grid
@@ -223,7 +256,7 @@ export default function Login() {
                                 }}
                             >
                                 <Link href="/signupRestaurant" variant="body1">
-                                    Sign Up as an Owner
+                                    Sign Up as Owner
                                 </Link>
                             </Grid>
                         </Grid>

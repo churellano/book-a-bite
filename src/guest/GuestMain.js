@@ -4,6 +4,7 @@ import { Grid, Typography } from '@mui/material'
 import Navbar from '../common-components/Navbar'
 import RestaurantListItem from '../common-components/RestaurantListItem'
 import { getAllRestaurantsGuest } from '../api/api'
+import GuestGoogleMaps from './GuestGoogleMaps.js'
 
 export default function GuestMain() {
     const [restraurants, setRestraurants] = useState([])
@@ -29,7 +30,7 @@ export default function GuestMain() {
                     </Grid>
                 ))}
             </Grid>
-            {/* TODO: Add Google Maps */}
+            <GuestGoogleMaps />
         </div>
     )
 }
