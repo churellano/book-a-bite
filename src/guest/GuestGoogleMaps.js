@@ -75,10 +75,10 @@ function Map() {
 
   const placeSelected = async (place) => {
     // console.log(place);
-    let selected = place.formatted_address;
-    setAddress(selected);
-    // get coordinates for Marker
-    const results = await getGeocode({ address: selected });
+    let selectedAddr = place.formatted_address;
+    setAddress(selectedAddr);
+    // get Marker coordinates using address
+    const results = await getGeocode({ address: selectedAddr });
     const { lat, lng } = await getLatLng(results[0]);
     console.log("lat: " + lat + "Lng: " + lng);
   }
