@@ -21,6 +21,7 @@ export default function GuestConfirmReservationModal({
     durationHours,
     durationMinutes,
     numberOfGuests,
+    tableCapacity,
     note,
     handleChange,
     handleClose,
@@ -31,6 +32,7 @@ export default function GuestConfirmReservationModal({
     const isDurationValid = isHoursValid && isMinutesValid && (
         durationHours + Utility.minutesToHours(durationMinutes)
     ) >= minimumReservationDuration;
+    const isNumberOfGuestsValid = numberOfGuests > 0 && numberOfGuests <= tableCapacity;
 
     return (
         <Modal open={open} onClose={handleClose}>
@@ -103,16 +105,17 @@ export default function GuestConfirmReservationModal({
                     }
                     
                     <TextField
-                        label="Number of guests"
+                        label={`Number of guests (max ${tableCapacity})`}
                         name="numberOfGuests"
                         type="text"
                         inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                         variant="outlined"
                         value={numberOfGuests}
-                        error={numberOfGuests <= 0}
+                        error={!isNumberOfGuestsValid}
                         helperText={
-                            numberOfGuests <= 0 &&
-                            'Number of guests must be greater than 0'
+                            !isNumberOfGuestsValid ?
+                                'Number of guests must be in the range [1, 4]' :
+                                null
                         }
                         onChange={handleChange}
                     />
@@ -138,7 +141,7 @@ export default function GuestConfirmReservationModal({
                         <Button
                             variant="contained"
                             onClick={handleConfirm}
-                            disabled={!isDurationValid}
+                            disabled={!isDurationValid || !isNumberOfGuestsValid}
                         >
                             Reserve time
                         </Button>

@@ -115,7 +115,7 @@ export default function OwnerRestaurantDetails() {
                 restaurantId: location.state
                     ? location.state.data.restaurantid
                     : null,
-                ownerId: sessionStorage.getItem('userId'),
+                ownerId: +sessionStorage.getItem('userId'),
                 name,
                 address,
                 phone,

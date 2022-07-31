@@ -9,6 +9,7 @@ export default function GuestTableAvailableTimes({
     restaurantId,
     availableTimes,
     minimumReservationDuration,
+    tableCapacity,
     clearSelectedTable
 }) {
     const [open, setOpen] = useState(false);
@@ -102,6 +103,7 @@ export default function GuestTableAvailableTimes({
                     durationHours={durationHours}
                     durationMinutes={durationMinutes}
                     numberOfGuests={numberOfGuests}
+                    tableCapacity={tableCapacity}
                     note={note}
                     handleChange={handleChange}
                     handleClose={() => setOpen(false)}
