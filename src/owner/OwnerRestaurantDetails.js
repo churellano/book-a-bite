@@ -74,17 +74,22 @@ export default function OwnerRestaurantDetails() {
       true
     );
 
+    console.log(location.state);
+
     const navigate = useNavigate()
+
+    console.log(openingTime, closingTime)
+
 
     const ownerRestaurantProfileProps = {
         name,
         address,
         phone,
         capacity,
-        openingTime,
-        closingTime,
-        minimumReservationDuration,
-        reservationInterval,
+        openingTime: +openingTime,
+        closingTime: +closingTime,
+        minimumReservationDuration: +minimumReservationDuration,
+        reservationInterval: +reservationInterval,
         setName,
         setAddress,
         setPhone,
@@ -94,6 +99,8 @@ export default function OwnerRestaurantDetails() {
         setMinimumReservationDuration,
         setReservationInterval,
     }
+
+    console.log(ownerRestaurantProfileProps)
 
     const ownerRestaurantMapProps = {
         restaurantId: location.state ? location.state.data.restaurantid : null,
@@ -131,6 +138,8 @@ export default function OwnerRestaurantDetails() {
                 mapNumOfCols: columns,
                 tables: JSON.stringify(tables),
             }
+
+            console.log(restaurant);
 
             await saveRestaurantOwner(restaurant)
 

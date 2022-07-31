@@ -2,11 +2,14 @@ import { Box } from '@mui/material'
 
 import './RestaurantMap.css'
 
-const getCellColour = (cell) => {
+const getCellColour = (mode, cell) => {
     let color = '#ffffff' // White
-    if (cell.isPartOfFinishedTable && !cell.isMarkedForDeletion) {
+
+    if (cell.selected && mode === 'guestView') {
+        color = '#FFA500' // Orange
+    } else if (cell.isPartOfFinishedTable && !cell.isMarkedForDeletion) {
         color = '#0000ff' // Blue
-    } else if (cell.selected) {
+    } else if (cell.selected && mode === 'create') {
         // Green
         color = '#00ff00' // Green
     }
@@ -25,6 +28,8 @@ function getCursorStyle(mode, cell) {
     } else if (mode === 'ownerView') {
         // Viewing table map as owner
         cursorStyle = 'default'
+    } else if (mode === 'guestView') {
+        cursorStyle = cell.isPartOfFinishedTable ?  'pointer' : 'default';
     }
 
     return cursorStyle;
@@ -46,10 +51,12 @@ export default function RestaurantMap({
                     className="table-cell"
                     onClick={onCellClick(cell)}
                     style={{
-                        backgroundColor: getCellColour(cell),
+                        backgroundColor: getCellColour(mode, cell),
                         cursor: getCursorStyle(mode, cell)
                     }}
-                ></div>
+                >
+                   {cell.isFirstCellInTable ? cell.tableId : null} 
+                </div>
             ))}
         </Box>
     )

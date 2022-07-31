@@ -74,7 +74,7 @@ export default function OwnerRestaurantProfile({
                     type="text"
                     inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                     value={capacity}
-                    onChange={(e) => setCapacity(e.target.value)}
+                    onChange={(e) => setCapacity(+e.target.value)}
                 />
             </div>
 
@@ -115,7 +115,7 @@ export default function OwnerRestaurantProfile({
                     }}
                     value={minimumReservationDuration}
                     onChange={(e) =>
-                        setMinimumReservationDuration(e.target.value)
+                        setMinimumReservationDuration(+e.target.value)
                     }
                 />
                 <TextField
@@ -123,7 +123,7 @@ export default function OwnerRestaurantProfile({
                     type="text"
                     inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                     value={reservationInterval}
-                    onChange={(e) => setReservationInterval(e.target.value)}
+                    onChange={(e) => setReservationInterval(+e.target.value)}
                 />
             </div>
         </Box>
