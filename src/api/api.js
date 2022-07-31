@@ -34,8 +34,8 @@ export const loginOwner = (email) => {
     })
 }
 
-export const addRestaurantOwner = (data) => {
-    return axios.post(`${apiUrl}/api/owner/addRestaurant`, {
+export const saveRestaurantOwner = (data) => {
+    return axios.post(`${apiUrl}/api/owner/saveRestaurant`, {
         data: data,
     })
 }
@@ -63,9 +63,36 @@ export const getProfileGuest = () => {
 }
 
 export const getAllRestaurantsGuest = () => {
-    return axios.get(`${apiUrl}/api/guest/main`)
+    return axios.get(`${apiUrl}/api/guest/getAllRestaurants`)
 }
 
-export const getCurrentBookingsGuest = () => {
-    return axios.get(`${apiUrl}/api/guest/currentBookings`)
+export const addReservationGuest = (data) => {
+    return axios.post(`${apiUrl}/api/guest/addReservation`, {
+        data: data,
+    })
+}
+
+export const getReservationsByRestaurantIdGuest = (restaurantId, tableId) => {
+    return axios.get(`${apiUrl}/api/guest/getReservationsByRestaurantId`, {
+        params: {
+            restaurantId: restaurantId,
+            tableId: tableId,
+        },
+    })
+}
+
+export const getCurrentReservationsGuest = (guestId) => {
+    return axios.get(`${apiUrl}/api/guest/getReservationsWithRestaurantsData`, {
+        params: {
+            guestId: guestId,
+        },
+    })
+}
+
+export const deleteReservationGuest = (reservationId) => {
+    return axios.delete(`${apiUrl}/api/guest/deleteReservation`, {
+        data: {
+            reservationId: reservationId,
+        },
+    })
 }

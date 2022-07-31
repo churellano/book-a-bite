@@ -1,11 +1,36 @@
 export default class Utility {
     static createCellsArray = (rows, columns) =>
         Array.from({ length: rows * columns }).map((e, i) => ({
+            tableId: null,
             x: i % columns,
             y: (i - (i % columns)) / columns,
             selected: false,
-            isPartOfNewTable: false,
+            isPartOfFinishedTable: false,
+            isFirstCellInTable: false
         }))
+
+    static copyTableCellsToCellsArray = (tables, cells) => {
+        const newCells = [...cells];
+        tables.forEach((table) => {
+            let firstCellMarked = false;
+            newCells.forEach((cell) => {
+                table.cells.forEach((tableCell) => {
+                    if (cell.x === tableCell.x && cell.y === tableCell.y) {
+                        if (!firstCellMarked) {
+                            cell.isFirstCellInTable = true;
+                            firstCellMarked = true;
+                        }
+                        
+                        cell.selected = tableCell?.selected
+                        cell.isPartOfFinishedTable = tableCell?.isPartOfFinishedTable
+                        cell.tableId = table?.id
+                    }
+                })
+            })
+        })
+
+        return newCells;
+    }
 
     static minutesToHours = (minutes) => Math.round((minutes * 100) / 60) / 100
 
@@ -67,8 +92,24 @@ export default class Utility {
 
     static timeStringToHours = (time) => {
         const hour = parseInt(time.split(':')[0], 10)
-        const minute = parseInt(time.split(':')[1], 10)
 
-        return hour + Math.round((minute * 100) / 60) / 100
+        const minuteString = time.split(':')[1];
+        const minute = minuteString ? parseInt(time.split(':')[1], 10) : 0;
+
+        return +(hour + Math.round((minute * 100) / 60) / 100);
+    }
+
+    static hoursToTimeString = (hours) => {
+        hours = parseFloat(hours)
+        let hour = Math.floor(hours)
+        let minute = Math.round((hours - hour) * 60)
+        if (hour.toString().length === 1) {
+            hour = '0' + hour.toString()
+        }
+        if (minute.toString().length === 1) {
+            minute = '0' + minute.toString()
+        }
+
+        return `${hour}:${minute}`
     }
 }

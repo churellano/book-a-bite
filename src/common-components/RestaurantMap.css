@@ -10,5 +10,6 @@
     background-color: #ffffff;
     display: flex;
     aspect-ratio: 1;
-    font-size: 75%;
+    font-size: 24px;
+    color: #ffffff
 }

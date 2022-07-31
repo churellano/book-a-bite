@@ -1,21 +1,72 @@
 import { useState } from 'react'
-import { Box, List, ListItemButton, Paper, Typography } from '@mui/material'
+import { Box, List, ListItemButton, Paper, Snackbar, Typography } from '@mui/material'
 
 import GuestConfirmReservationModal from './GuestConfirmReservationModal'
 import Utility from '../utility'
+import { addReservationGuest } from '../api/api'
 
-export default function GuestTableAvailableTimes({ availableTimes }) {
-    const [open, setOpen] = useState(false)
-    const [selectedTime, setSelectedTime] = useState(null)
+export default function GuestTableAvailableTimes({
+    restaurantId,
+    availableTimes,
+    minimumReservationDuration,
+    tableCapacity,
+    clearSelectedTable
+}) {
+    const [open, setOpen] = useState(false);
+    const [selectedTime, setSelectedTime] = useState(null);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+    const [durationHours, setDurationHours] = useState(1);
+    const [durationMinutes, setDurationMinutes] = useState(0);
+    const [numberOfGuests, setNumberOfGuests] = useState(1);
+    const [note, setNote] = useState('');
+
+    const handleChange = (event) => {
+        const inputName = event.target.name;
+        const inputValue =  event.target.value;
+        switch (inputName) {
+            case 'hours':
+                setDurationHours(+inputValue || 0);
+                break;
+            case 'minutes':
+                setDurationMinutes(+inputValue || 0);
+                break;
+            case 'numberOfGuests':
+                setNumberOfGuests(+inputValue || 0);
+                break;
+            case 'note':
+                setNote(inputValue.trim());
+                break;
+            default:
+                return;
+        }
+    }
 
     const handleClick = (availableTime) => {
         setSelectedTime(availableTime)
         setOpen(true)
     }
 
-    const handleConfirm = () => {
-        // TODO: Reserve time
-        console.log('Debug: Confirming reservation')
+    const handleConfirm = async () => {
+        try {
+            // Save reservation data
+            const reservation = {
+                guestId: sessionStorage.getItem('userId'),
+                tableId: selectedTime.tableId,
+                restaurantId,
+                bookingTime: selectedTime.bookingTime,
+                duration: durationHours + Utility.minutesToHours(durationMinutes),
+                note
+            };
+
+            await addReservationGuest(reservation)
+
+            setOpen(false)
+            clearSelectedTable();
+            setSnackbarOpen(true);
+        } catch (e) {
+            console.error(e)
+        }
     }
 
     return (
@@ -47,11 +98,24 @@ export default function GuestTableAvailableTimes({ availableTimes }) {
             {selectedTime ? (
                 <GuestConfirmReservationModal
                     open={open}
+                    minimumReservationDuration={minimumReservationDuration}
                     selectedTime={selectedTime}
+                    durationHours={durationHours}
+                    durationMinutes={durationMinutes}
+                    numberOfGuests={numberOfGuests}
+                    tableCapacity={tableCapacity}
+                    note={note}
+                    handleChange={handleChange}
                     handleClose={() => setOpen(false)}
                     handleConfirm={handleConfirm}
                 />
             ) : null}
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={5000}
+                onClose={() => setSnackbarOpen(false)}
+                message="Reservation confirmed"
+            />
         </Box>
     )
 }

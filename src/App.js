@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
-import GuestCurrentBookings from './guest/GuestCurrentBookings'
+import GuestCurrentReservations from './guest/GuestCurrentReservations'
 import GuestMain from './guest/GuestMain'
 import GuestProfile from './guest/GuestProfile'
 import GuestRestaurantMap from './guest/GuestRestaurantMap'
@@ -9,6 +9,7 @@ import GuestSignUp from './login/GuestSignUp'
 import OwnerSignUp from './login/OwnerSignUp'
 import OwnerMain from './owner/OwnerMain'
 import OwnerRestaurantDetails from './owner/OwnerRestaurantDetails'
+import OnwerRestaurantProfileEdit from './owner/OwnerRestaurantProfileEdit'
 
 function App() {
     return (
@@ -45,11 +46,11 @@ function App() {
                     }
                 />
                 <Route
-                    path="/guest/currentBookings"
+                    path="/guest/getReservationsWithRestaurantsData"
                     element={
                         JSON.parse(localStorage.getItem('isLoggedIn')) &&
                         !JSON.parse(localStorage.getItem('isOwner')) && (
-                            <GuestCurrentBookings />
+                            <GuestCurrentReservations />
                         )
                     }
                 />
@@ -68,6 +69,15 @@ function App() {
                         JSON.parse(localStorage.getItem('isLoggedIn')) &&
                         JSON.parse(localStorage.getItem('isOwner')) && (
                             <OwnerRestaurantDetails />
+                        )
+                    }
+                />
+                <Route
+                    path="/owner/restaurant/edit"
+                    element={
+                        JSON.parse(localStorage.getItem('isLoggedIn')) &&
+                        JSON.parse(localStorage.getItem('isOwner')) && (
+                            <OnwerRestaurantProfileEdit />
                         )
                     }
                 />

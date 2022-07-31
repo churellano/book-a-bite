@@ -170,11 +170,15 @@ app.post('/api/owner/login', async (req, res) => {
     }
 })
 
-app.post('/api/owner/addRestaurant', async (req, res) => {
+app.post('/api/owner/saveRestaurant', async (req, res) => {
     try {
-        let result = await pool
-            .insert([
-                {
+        let result
+        if (req.body.data.restaurantId) {
+            result = pool('restaurants')
+                .where({
+                    restaurantid: req.body.data.restaurantId,
+                })
+                .update({
                     ownerid: req.body.data.ownerId,
                     name: req.body.data.name,
                     address: req.body.data.address,
@@ -188,11 +192,54 @@ app.post('/api/owner/addRestaurant', async (req, res) => {
                     mapnumofcols: req.body.data.mapNumOfCols,
                     tables: req.body.data.tables,
                     capacity: req.body.data.capacity,
-                },
-            ])
-            .into('restaurants')
-        console.log('Added new restaurant')
-        res.json(result)
+                })
+                .catch((err) => console.log(err))
+            console.log('Updated existing restraurant')
+        } else {
+            result = await pool
+                .insert([
+                    {
+                        ownerid: req.body.data.ownerId,
+                        name: req.body.data.name,
+                        address: req.body.data.address,
+                        phone: req.body.data.phone,
+                        openingtime: req.body.data.openingTime,
+                        closingtime: req.body.data.closingTime,
+                        minimumreservationduration:
+                            req.body.data.mininumReservationDuration,
+                        reservationinterval: req.body.data.reservationInterval,
+                        mapnumofrows: req.body.data.mapNumOfRows,
+                        mapnumofcols: req.body.data.mapNumOfCols,
+                        tables: req.body.data.tables,
+                        capacity: req.body.data.capacity,
+                    },
+                ])
+                .returning([
+                    'restaurantid',
+                    'tables'
+                ])
+                .into('restaurants');
+
+            const restaurantId = result[0].restaurantid;
+            const tables = result[0].tables;
+
+            console.log('type', typeof req.body.data.tables)
+            console.log('restaurantId', restaurantId)
+            console.log('tables before', tables);
+
+            // Update tables with restaurantId from newly inserted restaurant
+            tables.forEach(t => t.restaurantId = restaurantId);
+
+            console.log('updatedTables', tables);
+            await pool('restaurants')
+                .update({
+                    tables: JSON.stringify(tables)
+                })
+                .catch((err) => console.log(err))
+            
+            console.log('Added new restaurant')
+        }
+        res.status(200).json()
     } catch (e) {
         console.error(e)
         res.status(500).json()
@@ -222,12 +269,92 @@ app.delete('/api/owner/deleteRestaurant', async (req, res) => {
         res.status(500).json()
     }
 })
-app.get('/api/guest/main', (req, res) => {
-    res.json(restaurants)
+
+// ******** GUEST USER MODE APIS ******** //
+
+app.get('/api/guest/getAllRestaurants', async (req, res) => {
+    try {
+        let restaurantsArray = await pool('restaurants').select('*')
+        res.json(restaurantsArray)
+    } catch (e) {
+        console.error(e)
+        res.status(500).json()
+    }
 })
 
-app.get('/api/guest/currentBookings', (req, res) => {
-    res.json(restaurants)
+app.get('/api/guest/getReservationsByRestaurantId', async (req, res) => {
+    try {
+        let row = await pool('reservations')
+            .where({
+                restaurantid: req.query.restaurantId,
+                tableid: req.query.tableId,
+            })
+            .select('*')
+        res.json(row)
+    } catch (e) {
+        console.error(e)
+        res.status(500).json()
+    }
+})
+
+app.post('/api/guest/addReservation', async (req, res) => {
+    try {
+        let result = await pool
+            .insert([
+                {
+                    guestid: req.body.data.guestId,
+                    tableid: req.body.data.tableId,
+                    restaurantid: req.body.data.restaurantId,
+                    bookingtime: req.body.data.bookingTime,
+                    duration: req.body.data.duration,
+                    note: req.body.data.note,
+                },
+            ])
+            .into('reservations')
+        console.log('Added new reservation', result)
+        res.json(result)
+    } catch (e) {
+        console.error(e)
+        res.status(500).json()
+    }
+})
+
+app.delete('/api/guest/deleteReservation', async (req, res) => {
+    try {
+        let result = await pool('reservations')
+            .where('reservationid', req.body.reservationId)
+            .delete()
+        res.json(result)
+    } catch (e) {
+        console.error(e)
+        res.status(500).json()
+    }
+})
+
+app.get('/api/guest/getReservationsWithRestaurantsData', async (req, res) => {
+    try {
+        let reservations = await pool('reservations')
+            .where({
+                guestid: req.query.guestId,
+            })
+            .select('*')
+        let promisesArray = []
+        reservations.forEach(async (reservation) => {
+            let restaurantPromise = pool('restaurants')
+                .where('restaurantid', reservation.restaurantid)
+                .select('*')
+            promisesArray.push(restaurantPromise)
+        })
+        let restaurants = await Promise.all(promisesArray)
+        restaurants.forEach((restaurant, index) => {
+            restaurant[0].bookingtime = reservations[index].bookingtime
+            restaurant[0].reservationid = reservations[index].reservationid
+        })
+        res.json(restaurants.flat(1))
+    } catch (e) {
+        console.error(e)
+        res.status(500).json()
+    }
 })
 
 app.get('/api/guest/profile', (req, res) => {

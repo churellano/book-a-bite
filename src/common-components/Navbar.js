@@ -22,7 +22,10 @@ export default function Navbar(props) {
     const pages = props.isGuestMode
         ? [
               { name: 'Restaurants', link: '/guest/main' },
-              { name: 'Current Bookings', link: '/guest/currentBookings' },
+              {
+                  name: 'Current Reservations',
+                  link: '/guest/getReservationsWithRestaurantsData',
+              },
           ]
         : [{ name: 'Restaurants', link: '/owner/main' }]
     const settings = props.isGuestMode

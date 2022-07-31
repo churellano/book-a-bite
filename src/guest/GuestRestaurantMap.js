@@ -5,96 +5,8 @@ import Navbar from '../common-components/Navbar'
 import RestaurantMap from '../common-components/RestaurantMap'
 import Utility from '../utility'
 import GuestTableAvailableTimes from './GuestTableAvailableTimes'
-
-const MOCK_RESTAURANT_MAP = {
-    // capacity: 50,
-    restaurantId: 1,
-    openingTime: 12,
-    closingTime: 22,
-    mininumReservationDuration: 1.5,
-    reservationInterval: 0.5,
-    rows: 10,
-    columns: 10,
-    tables: [
-        {
-            id: 1,
-            restaurantId: 1,
-            name: 'Table 1',
-            capacity: 3,
-            cells: [
-                {
-                    tableId: 1,
-                    x: 0,
-                    y: 0,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-                {
-                    tableId: 1,
-                    x: 1,
-                    y: 0,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-                {
-                    tableId: 1,
-                    x: 2,
-                    y: 0,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-            ],
-        },
-        {
-            id: 2,
-            restaurantId: 1,
-            name: 'Table 2',
-            capacity: 6,
-            cells: [
-                {
-                    tableId: 2,
-                    x: 7,
-                    y: 9,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-                {
-                    tableId: 2,
-                    x: 8,
-                    y: 9,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-                {
-                    tableId: 2,
-                    x: 9,
-                    y: 9,
-                    selected: true,
-                    isPartOfTable: true,
-                },
-            ],
-        },
-    ],
-}
-
-const MOCK_RESERVATIONS = [
-    {
-        id: 1,
-        restaurantId: 1,
-        userId: 1,
-        tableId: 1,
-        bookingTime: new Date('July 14, 2022 12:00:00'),
-        duration: 2,
-    },
-    {
-        id: 1,
-        restaurantId: 1,
-        userId: 1,
-        tableId: 1,
-        bookingTime: new Date('July 14, 2022 18:30:00'),
-        duration: 2,
-    },
-]
+import { useLocation } from 'react-router-dom'
+import { getReservationsByRestaurantIdGuest } from '../api/api'
 
 function createAvailableTimes(
     restaurantId,
@@ -104,7 +16,7 @@ function createAvailableTimes(
     closingTime,
     reservationInterval,
     mininumReservationDuration,
-    currentReservations
+    getReservationsWithRestaurantsData
 ) {
     const latestReservationTime = closingTime - mininumReservationDuration
     let availableTimes = []
@@ -132,13 +44,16 @@ function createAvailableTimes(
     }
 
     // Remove available times that conflict with current reservations
-    currentReservations.forEach((currentReservation) => {
-        const startTimeHour = currentReservation.bookingTime.getHours()
+    getReservationsWithRestaurantsData.forEach((currentReservation) => {
+        const reservationDate = new Date(currentReservation.bookingtime);
+
+        const startTimeHour = reservationDate.getHours()
         const startTimeInHours =
             startTimeHour +
-            Utility.minutesToHours(currentReservation.bookingTime.getMinutes())
+            Utility.minutesToHours(reservationDate.getMinutes())
 
-        const endTimeHour = startTimeHour + currentReservation.duration
+        const endTimeHour = startTimeHour + (+currentReservation.duration)
+
         const endTimeMinutesInHours = endTimeHour - Math.floor(endTimeHour)
         const endTimeInHours = endTimeHour + endTimeMinutesInHours
 
@@ -152,40 +67,100 @@ function createAvailableTimes(
         })
     })
 
-    return availableTimes
+    return availableTimes;
 }
 
 export default function GuestRestaurantMap() {
-    const [availableTimes, setAvailableTimes] = useState([])
+    const location = useLocation();
+    const {
+        restaurantid,
+        ownerid,
+        name,
+        address,
+        phone,
+        capacity,
+        openingtime,
+        closingtime,
+        mapnumofrows,
+        mapnumofcols,
+        minimumreservationduration,
+        reservationinterval,
+        tables
+    } = location.state;
 
-    const cells = Utility.createCellsArray(
-        MOCK_RESTAURANT_MAP.rows,
-        MOCK_RESTAURANT_MAP.columns
-    )
+    const [availableTimes, setAvailableTimes] = useState([])
+    const [cells, setCells] = useState(
+        Utility.copyTableCellsToCellsArray(
+            tables, 
+            Utility.createCellsArray(
+                mapnumofrows,
+                mapnumofcols
+            )
+        )
+    );
+    const [selectedTable, setSelectedTable] = useState(null);
+
+    const clearSelectedTable = () => {
+        if (selectedTable !== null) {
+            cells.forEach((c) => {
+                if (c.tableId === selectedTable.id) {
+                    c.selected = false;
+                }
+            });
+        }
+
+        setSelectedTable(null);
+    };
+
+    const markSelectedTable = (tableId) => {
+        // Clear previous table selection
+        if (selectedTable !== null && selectedTable.id !== tableId) {
+            cells.forEach((c) => {
+                if (c.tableId === selectedTable.id) {
+                    c.selected = false;
+                }
+            });
+        }
+
+        // Mark newly selected table
+        cells.forEach((c) => {
+            if (c.tableId === tableId) {
+                c.selected = true;
+            }
+        });
+
+        setSelectedTable(tables.find(t => t.id === tableId));
+        setCells([...cells])
+    }
 
     // Show available times for clicked table
     const onCellClick = (clickedCell) => (clickObject) => {
-        const tableId = clickedCell.tableId
-        const tableName = MOCK_RESTAURANT_MAP.tables.find(
-            (table) => table.id === tableId
-        ).name
+        if (clickedCell.tableId !== null) {
+            const tableId = clickedCell.tableId
 
-        // TODO: Make get request to back end for reservations at this restaurant at this table
-        const reservationsResult = MOCK_RESERVATIONS.filter(
-            (reservation) => reservation.tableId === tableId
-        )
-        const times = createAvailableTimes(
-            MOCK_RESTAURANT_MAP.id,
-            tableId,
-            tableName,
-            MOCK_RESTAURANT_MAP.openingTime,
-            MOCK_RESTAURANT_MAP.closingTime,
-            MOCK_RESTAURANT_MAP.reservationInterval,
-            MOCK_RESTAURANT_MAP.mininumReservationDuration,
-            reservationsResult
-        )
+            markSelectedTable(tableId);
 
-        setAvailableTimes(times)
+            const tableName = tables.find(
+                (table) => table.id === tableId
+            ).name
+            
+            // Get current reservations at the clicked table and calculate available times
+            getReservationsByRestaurantIdGuest(restaurantid, tableId)
+                .then(response => {
+                    const times = createAvailableTimes(
+                        restaurantid,
+                        tableId,
+                        tableName,
+                        +openingtime,
+                        +closingtime,
+                        +reservationinterval,
+                        +minimumreservationduration,
+                        response.data
+                    );
+            
+                    setAvailableTimes(times);
+                });
+        }
     }
 
     return (
@@ -205,21 +180,26 @@ export default function GuestRestaurantMap() {
                         flexDirection: 'column',
                     }}
                 >
-                    <Typography variant="h3">Restaurant Name</Typography>
+                    <Typography variant="h3">{name}</Typography>
                     <Typography variant="h5">
                         Select a table and time
                     </Typography>
                     <RestaurantMap
-                        rows={MOCK_RESTAURANT_MAP.rows}
-                        columns={MOCK_RESTAURANT_MAP.columns}
-                        tables={MOCK_RESTAURANT_MAP.tables}
+                        rows={mapnumofrows}
+                        columns={mapnumofcols}
                         cells={cells}
                         onCellClick={onCellClick}
-                        isGuestMode={true}
+                        mode='guestView'
                     />
                 </Box>
                 {availableTimes.length ? (
-                    <GuestTableAvailableTimes availableTimes={availableTimes} />
+                    <GuestTableAvailableTimes
+                        restaurantId={restaurantid}
+                        availableTimes={availableTimes}
+                        minimumReservationDuration={+minimumreservationduration}
+                        tableCapacity={selectedTable?.capacity}
+                        clearSelectedTable={clearSelectedTable}
+                    />
                 ) : null}
             </Container>
         </>
