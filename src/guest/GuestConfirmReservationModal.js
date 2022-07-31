@@ -16,11 +16,21 @@ const style = {
 
 export default function GuestConfirmReservationModal({
     open,
+    minimumReservationDuration,
     selectedTime,
+    durationHours,
+    durationMinutes,
+    numberOfGuests,
+    note,
+    handleChange,
     handleClose,
     handleConfirm,
 }) {
-    const [numberOfGuests, setNumberOfGuests] = useState(1)
+    const isHoursValid = durationHours >= 0;
+    const isMinutesValid = durationMinutes >= 0 && durationMinutes <= 59;
+    const isDurationValid = isHoursValid && isMinutesValid && (
+        durationHours + Utility.minutesToHours(durationMinutes)
+    ) >= minimumReservationDuration;
 
     return (
         <Modal open={open} onClose={handleClose}>
@@ -50,12 +60,53 @@ export default function GuestConfirmReservationModal({
                         },
                     }}
                 >
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        gap: 2
+                    }}>
+                        <TextField
+                            label="Hours"
+                            name="hours"
+                            type="text"
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                            variant="outlined"
+                            value={durationHours}
+                            error={!isHoursValid}
+                            helperText={
+                                !isHoursValid ?
+                                    'Hours must be a positive integer' :
+                                    null
+                            }
+                            onChange={handleChange}
+                        />
+                        <TextField
+                            label="Minutes"
+                            name="minutes"
+                            type="text"
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                            variant="outlined"
+                            value={durationMinutes}
+                            error={!isMinutesValid}
+                            helperText={
+                                !isMinutesValid ?
+                                    'Minutes must be in the range [0, 59]' :
+                                    null
+                            }
+                            onChange={handleChange}
+                        />
+                    </Box>
+                    {
+                        !isDurationValid ?
+                            <Typography color="error">Reservation length is invalid.</Typography> :
+                            null
+                    }
+                    
                     <TextField
                         label="Number of guests"
-                        type="number"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
+                        name="numberOfGuests"
+                        type="text"
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                         variant="outlined"
                         value={numberOfGuests}
                         error={numberOfGuests <= 0}
@@ -63,14 +114,17 @@ export default function GuestConfirmReservationModal({
                             numberOfGuests <= 0 &&
                             'Number of guests must be greater than 0'
                         }
-                        onChange={(e) => setNumberOfGuests(e.target.value)}
+                        onChange={handleChange}
                     />
                     <TextField
                         label="Notes"
+                        name="note"
                         multiline
                         rows={3}
                         placeholder="Note any special requests"
                         variant="standard"
+                        value={note}
+                        onChange={handleChange}
                     />
                     <Box
                         sx={{
@@ -81,7 +135,11 @@ export default function GuestConfirmReservationModal({
                             },
                         }}
                     >
-                        <Button variant="contained" onClick={handleConfirm}>
+                        <Button
+                            variant="contained"
+                            onClick={handleConfirm}
+                            disabled={!isDurationValid}
+                        >
                             Reserve time
                         </Button>
                         <Button variant="outlined" onClick={handleClose}>

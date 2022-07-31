@@ -135,10 +135,12 @@ function createAvailableTimes(
 
     // Remove available times that conflict with current reservations
     getReservationsWithRestaurantsData.forEach((currentReservation) => {
-        const startTimeHour = currentReservation.bookingTime.getHours()
+        const reservationDate = new Date(currentReservation.bookingtime);
+
+        const startTimeHour = reservationDate.getHours()
         const startTimeInHours =
             startTimeHour +
-            Utility.minutesToHours(currentReservation.bookingTime.getMinutes())
+            Utility.minutesToHours(reservationDate.getMinutes())
 
         const endTimeHour = startTimeHour + currentReservation.duration
         const endTimeMinutesInHours = endTimeHour - Math.floor(endTimeHour)
@@ -158,43 +160,96 @@ function createAvailableTimes(
 }
 
 export default function GuestRestaurantMap() {
-    const [availableTimes, setAvailableTimes] = useState([])
-    // TODO: replace MOCK_RESTAURANT_MAP by restaurantData
-    // this gets all info about the selected data
-    // const [restaurantData, setRestaurantData] = useState(useLocation().state)
+    const location = useLocation();
+    const {
+        restaurantid,
+        ownerid,
+        name,
+        address,
+        phone,
+        capacity,
+        openingtime,
+        closingtime,
+        mapnumofrows,
+        mapnumofcols,
+        minimumreservationduration,
+        reservationinterval,
+        tables
+    } = location.state;
 
-    const cells = Utility.createCellsArray(
-        MOCK_RESTAURANT_MAP.rows,
-        MOCK_RESTAURANT_MAP.columns
-    )
+    const [availableTimes, setAvailableTimes] = useState([])
+    const [cells, setCells] = useState(
+        Utility.copyTableCellsToCellsArray(
+            tables, 
+            Utility.createCellsArray(
+                mapnumofrows,
+                mapnumofcols
+            )
+        )
+    );
+    const [selectedTableId, setSelectedTableId] = useState(null);
+
+    const clearSelectedTable = () => {
+        if (selectedTableId !== null) {
+            cells.forEach((c) => {
+                if (c.tableId === selectedTableId) {
+                    c.selected = false;
+                }
+            });
+        }
+
+        setSelectedTableId(null);
+    };
+
+    const markSelectedTable = (tableId) => {
+        // Clear previous table selection
+        if (selectedTableId !== null && selectedTableId !== tableId) {
+            cells.forEach((c) => {
+                if (c.tableId === selectedTableId) {
+                    c.selected = false;
+                }
+            });
+        }
+
+        // Mark newly selected table
+        cells.forEach((c) => {
+            if (c.tableId === tableId) {
+                c.selected = true;
+            }
+        });
+
+        setSelectedTableId(tableId);
+        setCells([...cells])
+    }
 
     // Show available times for clicked table
     const onCellClick = (clickedCell) => (clickObject) => {
-        const tableId = clickedCell.tableId
-        const tableName = MOCK_RESTAURANT_MAP.tables.find(
-            (table) => table.id === tableId
-        ).name
+        if (clickedCell.tableId !== null) {
+            const tableId = clickedCell.tableId
 
-        // TODO: Make get request to back end for reservations at this restaurant at this table
-        // const reservationsResult = getReservationsByRestaurantIdGuest(
-        //     restaurantData.restaurantid,
-        //     tableId
-        // )
-        const reservationsResult = MOCK_RESERVATIONS.filter(
-            (reservation) => reservation.tableId === tableId
-        )
-        const times = createAvailableTimes(
-            MOCK_RESTAURANT_MAP.id,
-            tableId,
-            tableName,
-            MOCK_RESTAURANT_MAP.openingTime,
-            MOCK_RESTAURANT_MAP.closingTime,
-            MOCK_RESTAURANT_MAP.reservationInterval,
-            MOCK_RESTAURANT_MAP.mininumReservationDuration,
-            reservationsResult
-        )
+            markSelectedTable(tableId);
 
-        setAvailableTimes(times)
+            const tableName = tables.find(
+                (table) => table.id === tableId
+            ).name
+            
+            // Get current reservations at the clicked table and calculate available times
+            getReservationsByRestaurantIdGuest(restaurantid, tableId)
+                .then(response => {
+                    const times = createAvailableTimes(
+                        restaurantid,
+                        tableId,
+                        tableName,
+                        +openingtime,
+                        +closingtime,
+                        +reservationinterval,
+                        +minimumreservationduration,
+                        response.data
+                    );
+            
+                    setAvailableTimes(times);
+                });
+        }
     }
 
     return (
@@ -214,20 +269,25 @@ export default function GuestRestaurantMap() {
                         flexDirection: 'column',
                     }}
                 >
-                    <Typography variant="h3">Restaurant Name</Typography>
+                    <Typography variant="h3">{name}</Typography>
                     <Typography variant="h5">
                         Select a table and time
                     </Typography>
                     <RestaurantMap
-                        rows={MOCK_RESTAURANT_MAP.rows}
-                        columns={MOCK_RESTAURANT_MAP.columns}
+                        rows={mapnumofrows}
+                        columns={mapnumofcols}
                         cells={cells}
                         onCellClick={onCellClick}
-                        mode='view'
+                        mode='guestView'
                     />
                 </Box>
                 {availableTimes.length ? (
-                    <GuestTableAvailableTimes availableTimes={availableTimes} />
+                    <GuestTableAvailableTimes
+                        restaurantId={restaurantid}
+                        availableTimes={availableTimes}
+                        minimumReservationDuration={+minimumreservationduration}
+                        clearSelectedTable={clearSelectedTable}
+                    />
                 ) : null}
             </Container>
         </>
