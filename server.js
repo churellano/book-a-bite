@@ -1,19 +1,19 @@
+// @ts-nocheck
 let express = require('express')
 let path = require('path')
 let cors = require('cors')
-let restaurants = require('./testRestaurants')
 let guests = require('./testGuests')
 let Knex = require('knex')
 var session = require('express-session')
 
 let app = express()
 let port = process.env.PORT || 8080
+// let isProdEnv = process.env.NODE_ENV === 'production'
 
 // use this for prod
 const createTcpPool = async (config) => {
     if (process.env.NODE_ENV === 'production') {
         console.log('debug: in production')
-        // @ts-ignore
         return Knex({
             client: 'pg',
             connection: {
@@ -26,7 +26,6 @@ const createTcpPool = async (config) => {
             ...config,
         })
     } else {
-        // @ts-ignore
         return Knex({
             client: 'pg',
             connection: {
@@ -66,44 +65,34 @@ app.use(async (req, res, next) => {
     }
 })
 
-let options = {
+let staticFilesOptions = {
     dotfiles: 'ignore',
     extensions: ['html', 'htm'],
     index: 'index.html',
 }
+
+// const corsOptions = {
+//     origin: isProdEnv
+//         ? 'https://cmpt-372-project.uc.r.appspot.com/'
+//         : 'http://localhost:3000',
+//     credentials: true,
+// }
 app.use('/', cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
-app.use('/', express.static('./build', options))
-app.use(
-    session({
-        name: 'session',
-        secret: 'secure-pwd', // TODO: change this to env vat for security
-        resave: false,
-        // @ts-ignore
-        maxAge: 30 * 60 * 1000, // 30 minutes
-    })
-)
+app.use('/', express.static('./build', staticFilesOptions))
+// app.use(
+//     session({
+//         name: 'session',
+//         secret: isProdEnv ? process.env.SESSION_PWD : 'secure-pwd',
+//         resave: false,
+//         maxAge: 30 * 60 * 1000, // 30 minutes
+//     })
+// )
 
-app.post('/api/addGuest', async (req, res) => {
-    try {
-        let result = await pool
-            .insert([
-                {
-                    fname: req.body.fname,
-                    lname: req.body.lname,
-                    phone: req.body.phone,
-                    email: req.body.email,
-                },
-            ])
-            .into('guests')
-        console.log('Added new guest', result)
-        res.json(result)
-    } catch (e) {
-        console.error(e)
-        res.status(500).json()
-    }
-})
+// **************************************** //
+// **        OWNER USER MODE APIS        ** //
+// **************************************** //
 
 app.post('/api/addOwner', async (req, res) => {
     try {
@@ -124,29 +113,6 @@ app.post('/api/addOwner', async (req, res) => {
     }
 })
 
-app.post('/api/guest/login', async (req, res) => {
-    try {
-        let row = await pool('guests')
-            .where('email', req.body.email)
-            .select('*')
-        if (row.length == 1) {
-            let guest = row[0]
-            // @ts-ignore
-            req.session.usr = guest
-            console.log('Logged in user:', guest)
-            res.json(guest)
-        } else {
-            console.error(
-                'Guest Login Error: either guest not found or multiple guests are found'
-            )
-            res.json(null)
-        }
-    } catch (e) {
-        console.error(e)
-        res.status(500).json()
-    }
-})
-
 app.post('/api/owner/login', async (req, res) => {
     try {
         let row = await pool('owners')
@@ -154,8 +120,7 @@ app.post('/api/owner/login', async (req, res) => {
             .select('*')
         if (row.length == 1) {
             let owner = row[0]
-            // @ts-ignore
-            req.session.usr = owner
+            // req.session.usr = owner
             console.log('Logged in user:', owner)
             res.json(owner)
         } else {
@@ -194,7 +159,7 @@ app.post('/api/owner/saveRestaurant', async (req, res) => {
                     capacity: req.body.data.capacity,
                 })
                 .catch((err) => console.log(err))
-            console.log('Updated existing restraurant')
+            console.log('Updated existing restraurant', result)
         } else {
             result = await pool
                 .insert([
@@ -214,32 +179,29 @@ app.post('/api/owner/saveRestaurant', async (req, res) => {
                         capacity: req.body.data.capacity,
                     },
                 ])
-                .returning([
-                    'restaurantid',
-                    'tables'
-                ])
-                .into('restaurants');
+                .returning(['restaurantid', 'tables'])
+                .into('restaurants')
 
-            const restaurantId = result[0].restaurantid;
-            const tables = result[0].tables;
+            const restaurantId = result[0].restaurantid
+            const tables = result[0].tables
 
             console.log('type', typeof req.body.data.tables)
             console.log('restaurantId', restaurantId)
-            console.log('tables before', tables);
+            console.log('tables before', tables)
 
             // Update tables with restaurantId from newly inserted restaurant
-            tables.forEach(t => t.restaurantId = restaurantId);
+            tables.forEach((t) => (t.restaurantId = restaurantId))
 
-            console.log('updatedTables', tables);
+            console.log('updatedTables', tables)
             await pool('restaurants')
                 .update({
-                    tables: JSON.stringify(tables)
+                    tables: JSON.stringify(tables),
                 })
                 .catch((err) => console.log(err))
-            
+
             console.log('Added new restaurant')
         }
-        res.status(200).json()
+        res.json(result)
     } catch (e) {
         console.error(e)
         res.status(500).json()
@@ -263,6 +225,7 @@ app.delete('/api/owner/deleteRestaurant', async (req, res) => {
         let result = await pool('restaurants')
             .where('restaurantid', req.body.restaurantId)
             .delete()
+        console.log('Deleted restaurant', result)
         res.json(result)
     } catch (e) {
         console.error(e)
@@ -270,10 +233,55 @@ app.delete('/api/owner/deleteRestaurant', async (req, res) => {
     }
 })
 
-// ******** GUEST USER MODE APIS ******** //
+// **************************************** //
+// **        GUEST USER MODE APIS        ** //
+// **************************************** //
+
+app.post('/api/addGuest', async (req, res) => {
+    try {
+        let result = await pool
+            .insert([
+                {
+                    fname: req.body.fname,
+                    lname: req.body.lname,
+                    phone: req.body.phone,
+                    email: req.body.email,
+                },
+            ])
+            .into('guests')
+        console.log('Added new guest', result)
+        res.json(result)
+    } catch (e) {
+        console.error(e)
+        res.status(500).json()
+    }
+})
+
+app.post('/api/guest/login', async (req, res) => {
+    try {
+        let row = await pool('guests')
+            .where('email', req.body.email)
+            .select('*')
+        if (row.length == 1) {
+            let guest = row[0]
+            // req.session.usr = guest
+            console.log('Logged in user:', guest)
+            res.json(guest)
+        } else {
+            console.error(
+                'Guest Login Error: either guest not found or multiple guests are found'
+            )
+            res.json(null)
+        }
+    } catch (e) {
+        console.error(e)
+        res.status(500).json()
+    }
+})
 
 app.get('/api/guest/getAllRestaurants', async (req, res) => {
     try {
+        // console.log('cookies', req.session.usr)
         let restaurantsArray = await pool('restaurants').select('*')
         res.json(restaurantsArray)
     } catch (e) {
@@ -324,6 +332,7 @@ app.delete('/api/guest/deleteReservation', async (req, res) => {
         let result = await pool('reservations')
             .where('reservationid', req.body.reservationId)
             .delete()
+        console.log('Deleted reservation', result)
         res.json(result)
     } catch (e) {
         console.error(e)
@@ -359,10 +368,6 @@ app.get('/api/guest/getReservationsWithRestaurantsData', async (req, res) => {
 
 app.get('/api/guest/profile', (req, res) => {
     res.json(guests[0])
-})
-
-app.get('/api/owner/main', (req, res) => {
-    res.json(restaurants)
 })
 
 // send static files for every route
