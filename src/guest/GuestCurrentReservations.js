@@ -6,7 +6,7 @@ import RestaurantListItem from '../common-components/RestaurantListItem'
 import { getCurrentReservationsGuest } from '../api/api'
 
 export default function GuestCurrentReservations(props) {
-    const [restraurants, setRestraurants] = useState([])
+    const [restaurant, setRestraurants] = useState([])
 
     useEffect(() => {
         getCurrentReservationsGuest(sessionStorage.getItem('userId'))
@@ -23,7 +23,7 @@ export default function GuestCurrentReservations(props) {
                 Your Current Reservations
             </Typography>
             <Grid container spacing={2}>
-                {restraurants.map((rest) => (
+                {restaurant.map((rest) => (
                     <Grid
                         key={rest.address + rest.reservationid}
                         item
