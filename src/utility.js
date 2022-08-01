@@ -32,7 +32,11 @@ export default class Utility {
         return newCells;
     }
 
-    static minutesToHours = (minutes) => Math.round((minutes * 100) / 60) / 100
+    static minutesToHours = (minutes) => Math.round((minutes * 100) / 60) / 100;
+
+    static hoursToMinutes = (hours) => Math.round(hours * 60);
+
+    static amOrPm = (timeInHours) => timeInHours >= 12 ? 'p.m.' : 'a.m.';
 
     static formatTimeTo12HourString = (date) => {
         // Change hour 0 to 12 midnight if needed
@@ -48,6 +52,57 @@ export default class Utility {
 
         return `${hour}:${minute}${period}`
     }
+
+    static isRestaurantOpen = (openingTime, closingTime) => {
+        const currentDate =  new Date();
+        const currentHour = currentDate.getHours();
+        const currentMinute = currentDate.getMinutes();
+        const currentTime = currentHour + Utility.minutesToHours(currentMinute);
+    
+        const openingHour = Math.floor(openingTime);
+        const openingMinute = Utility.hoursToMinutes(openingTime - openingHour);
+    
+        const closingHour = Math.floor(closingTime);
+        const closingMinute = Utility.hoursToMinutes(closingTime - closingHour);
+    
+        const openingDate = new Date();
+        openingDate.setHours(openingHour);
+        openingDate.setMinutes(openingMinute);
+    
+        const closingDate = new Date();
+        closingDate.setHours(closingHour);
+        closingDate.setMinutes(closingMinute);
+    
+        if (openingTime === closingTime) {
+            return true;
+        }
+    
+        // Restaurant is open in the day
+        if (openingTime < closingTime) {
+            if (currentTime < openingTime) {
+                return false;
+            } else if (currentTime > openingTime && currentTime < closingTime) {
+                return true;
+            } else if (currentTime > closingTime) {
+                return false;
+            }
+        }
+    
+        // Restaurant is open in the night
+        if (openingTime > closingTime) {
+            if (currentTime < openingTime) {
+                return false;
+            } else if (currentTime > openingTime) {
+                return true;
+            } else if (currentTime < closingTime) {
+                return true;
+            } else if (currentTime > closingTime && currentTime < openingTime) {
+                return false;
+            }
+        }
+    }
+
+    static minutesToMinutesString = (minutes) => minutes < 10 ? minutes.toString() + '0' : minutes.toString();
 
     // Return name of months from its number (0-11)
     // Return January by default if out of range
