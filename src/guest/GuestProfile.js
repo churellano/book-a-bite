@@ -5,7 +5,7 @@ import Navbar from '../common-components/Navbar'
 import { getProfileGuest, saveProfileGuest } from '../api/api'
 import Utility from '../utility'
 
-export default function GuestProfile(props) {
+export default function GuestProfile() {
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -26,10 +26,6 @@ export default function GuestProfile(props) {
             })
             .catch((err) => console.error(err))
     }, [])
-
-    const onEmailSubmit = (e) => {
-        e.preventDefault()
-    }
 
     const handleChange = (event) => {
         const inputName = event.target.name;
@@ -148,7 +144,6 @@ export default function GuestProfile(props) {
     )
 
     const saveProfile = async () => {
-        // Save data
         const profile = {
             guestid: sessionStorage.getItem('userId'),
             fname: firstName,
@@ -158,9 +153,7 @@ export default function GuestProfile(props) {
         }
 
         setIsEditing(false);
-
         await saveProfileGuest(profile)
-
         setSnackbarOpen(true);
     }
 
@@ -192,32 +185,6 @@ export default function GuestProfile(props) {
                         </Button>
                     </Box >
                     
-                </Paper>
-
-                <Paper component={Box} p={2} mt={4} variant="outlined">
-                    <Typography variant="h5" component="div">
-                        Set Email Notifications
-                    </Typography>
-                    <form>
-                        <TextField
-                            id="filled-basic"
-                            label="Enter Email"
-                            variant="filled"
-                            onChange={(event) => {
-                                setEmail(event.target.value)
-                            }}
-                        />
-                        <br></br>
-                        <br></br>
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            size="small"
-                            onClick={onEmailSubmit}
-                        >
-                            Submit
-                        </Button>
-                    </form>
                 </Paper>
 
                 <Snackbar
