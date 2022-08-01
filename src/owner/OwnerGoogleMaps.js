@@ -47,7 +47,7 @@ function Map({ allRestaurants }) {
   const [coordsArrayState, setCoordsArrayState] = useState([]);
 
   useEffect(() => {
-    updateCoordsArray(allRestaurants, coordsArrayState);
+    updateCoordsArray(allRestaurants);
     setTimeout(() => {
       setCoordsArrayState(coords);
     }, 3000);
@@ -74,7 +74,7 @@ function Map({ allRestaurants }) {
 };
 
 // convert restaurant addresses --> Coordinates for Map Markers 
-const updateCoordsArray = async (allRestaurants, coordsArrayState) => {
+const updateCoordsArray = async (allRestaurants) => {
   allRestaurants.forEach(async (rest) => {
     const results = await getGeocode({ address: rest.address });
     const { lat, lng } = await getLatLng(results[0]);
@@ -84,7 +84,6 @@ const updateCoordsArray = async (allRestaurants, coordsArrayState) => {
   });
 }
 
-let coords = [
-];
+let coords = [];
 
 
