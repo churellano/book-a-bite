@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import Navbar from '../common-components/Navbar'
 import RestaurantListItem from '../common-components/RestaurantListItem'
 import { getAllRestaurantsOwner } from '../api/api'
+import OwnerGoogleMaps from './OwnerGoogleMaps.js'
 
 export default function OwnerMain() {
     const [restaurant, setRestraurants] = useState([])
@@ -26,6 +27,7 @@ export default function OwnerMain() {
     return (
         <div>
             <Navbar isGuestMode={false} />
+            <OwnerGoogleMaps allRestaurants={restaurant} />
             <Grid container spacing={2}>
                 {restaurant.map((rest) => (
                     <Grid key={rest.address} item xs={12} sm={6}>
@@ -44,7 +46,6 @@ export default function OwnerMain() {
                     Add Restaurant
                 </Button>
             </Box>
-            {/* TODO: Add Google Maps */}
         </div>
     )
 }

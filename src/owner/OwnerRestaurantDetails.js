@@ -25,6 +25,10 @@ export default function OwnerRestaurantDetails() {
     const [address, setAddress] = useState(
         location.state ? location.state.data.address : ''
     )
+    const [isAddrSelected, setIsAddrSelected] = useState(
+        location.state ? location.state.data.isAddrSelected : false
+    )
+
     const [phone, setPhone] = useState(
         location.state ? location.state.data.phone : ''
     )
@@ -37,7 +41,7 @@ export default function OwnerRestaurantDetails() {
             : '00:00'
     )
     const [closingTime, setClosingTime] = useState(
-      location.state
+        location.state
             ? Utility.hoursToTimeString(location.state.data.closingtime)
             : '00:00'
     )
@@ -45,8 +49,8 @@ export default function OwnerRestaurantDetails() {
         useState(
             location.state
                 ? Math.round(
-                      location.state.data.minimumreservationduration * 60
-                  )
+                    location.state.data.minimumreservationduration * 60
+                )
                 : 60
         )
     const [reservationInterval, setReservationInterval] = useState(
@@ -69,9 +73,9 @@ export default function OwnerRestaurantDetails() {
     const [tableCapacity, setTableCapacity] = useState(0)
 
     const [isCreatingNewTableLayout, setIsCreatingNewTableLayout] = useState(
-      location.state && location.state.data.restaurantid ? 
-      false : 
-      true
+        location.state && location.state.data.restaurantid ?
+            false :
+            true
     );
 
     const navigate = useNavigate()
@@ -79,6 +83,7 @@ export default function OwnerRestaurantDetails() {
     const ownerRestaurantProfileProps = {
         name,
         address,
+        isAddrSelected,
         phone,
         capacity,
         openingTime,
@@ -87,6 +92,7 @@ export default function OwnerRestaurantDetails() {
         reservationInterval: +reservationInterval,
         setName,
         setAddress,
+        setIsAddrSelected,
         setPhone,
         setCapacity,
         setOpeningTime,
@@ -118,6 +124,7 @@ export default function OwnerRestaurantDetails() {
                 ownerId: +sessionStorage.getItem('userId'),
                 name,
                 address,
+                isAddrSelected,
                 phone,
                 capacity,
                 openingTime: Utility.timeStringToHours(openingTime),
@@ -131,6 +138,9 @@ export default function OwnerRestaurantDetails() {
                 mapNumOfCols: columns,
                 tables: JSON.stringify(tables),
             }
+            if (!isAddrSelected) {
+                throw "Please select a valid address";
+            }
 
             await saveRestaurantOwner(restaurant)
 
@@ -141,7 +151,7 @@ export default function OwnerRestaurantDetails() {
     }
 
     const resetRestaurantMap = () => {
-      setIsCreatingNewTableLayout(true);
+        setIsCreatingNewTableLayout(true);
     }
 
     const cancelResetRestaurantMap = () => {
@@ -157,9 +167,9 @@ export default function OwnerRestaurantDetails() {
             <Container>
                 <TabContext value={tab}>
                     <Box sx={{
-                      '& > .MuiButton-root': {
-                        mr: 1
-                      }
+                        '& > .MuiButton-root': {
+                            mr: 1
+                        }
                     }}>
                         <Button
                             variant="contained"
@@ -172,19 +182,19 @@ export default function OwnerRestaurantDetails() {
                             variant="contained"
                             color={
                                 isCreatingNewTableLayout ?
-                                'error' :
-                                'primary'
+                                    'error' :
+                                    'primary'
                             }
                             onClick={
                                 isCreatingNewTableLayout ?
-                                cancelResetRestaurantMap :
-                                resetRestaurantMap
+                                    cancelResetRestaurantMap :
+                                    resetRestaurantMap
                             }
                         >
                             {
                                 isCreatingNewTableLayout ?
-                                'Cancel New Restaurant Map' :
-                                'Create New Restaurant Map'
+                                    'Cancel New Restaurant Map' :
+                                    'Create New Restaurant Map'
                             }
                         </Button> : null}
                         <TabList onChange={(e, newTab) => setTab(newTab)}>

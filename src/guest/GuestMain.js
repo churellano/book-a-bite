@@ -25,6 +25,7 @@ export default function GuestMain() {
                 <Typography variant="h4" component="div" mb={3} textAlign="center">
                     Book a Table!
                 </Typography>
+
                 {restaurants.length ? 
                     <Grid container spacing={2}>
                         {Array.isArray(restaurants) &&
@@ -43,10 +44,9 @@ export default function GuestMain() {
                     </Box> 
                 }
 
-                <GuestGoogleMaps />
+                <GuestGoogleMaps allRestaurants={restaurants} />
 
             </Container>
-
         </div>
     )
 }

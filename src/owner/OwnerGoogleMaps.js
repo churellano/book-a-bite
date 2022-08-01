@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import { GoogleMap, useLoadScript, MarkerF, InfoWindowF } from '@react-google-maps/api';
 import {
   getGeocode,
   getLatLng,
 } from "use-places-autocomplete";
 
-// TODO: 
 //  - add API Key to .env @Rauf 
 const API_KEY = "AIzaSyDYwipDM1p4k_JDS4f4d65bTtosobHOGRo";
 
@@ -27,8 +26,7 @@ const markerDescStyle = {
   outline: 0
 }
 
-
-export default function GuestGoogleMaps({ allRestaurants }) {
+export default function OwnerGoogleMaps({ allRestaurants }) {
   // using state prevents warnings in LoadScript
   const [libs] = useState(['places']);
 
@@ -84,7 +82,8 @@ const updateCoordsArray = async (allRestaurants) => {
       coords.push({ lat, lng });
     }
   });
-
 }
 
 let coords = [];
+
+
