@@ -367,6 +367,56 @@ app.get('/api/guest/getReservationsWithRestaurantsData', async (req, res) => {
     }
 })
 
+app.get('/api/guest/profile', async (req, res) => {
+    try {
+        const result = await pool('guests')
+            .where('guestid', req.query.guestId)
+            .select('*');
+
+        res.json(result[0]);
+
+    } catch (e) {
+        console.error(e);
+        res.status(500).json();
+    }
+})
+
+// Save guest profile
+app.put('/api/guest/profile', async (req, res) => {
+    try {
+        const {
+            guestid,
+            fname, 
+            lname,
+            phone,
+            email
+        } = req.body.data;
+
+        const result = await pool('guests')
+            .where('guestid', guestid)
+            .update({
+                fname,
+                lname,
+                phone,
+                email
+            })
+            .returning([
+                'fname',
+                'lname',
+                'phone',
+                'email'
+            ]);
+
+        console.log('Updated guest profile', result[0]);
+
+        res.json(result[0]);
+
+    } catch (e) {
+        console.error(e);
+        res.status(500).json();
+    }
+});
+
 app.post('/api/guest/sendEmailConfirmation', async (req, res) => {
     try {
         console.log(req.body)
