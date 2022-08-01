@@ -1,72 +1,236 @@
 import { useState, useEffect } from 'react'
-import { Box, Typography, Button, TextField } from '@mui/material'
+import { Box, Typography, Button, TextField, Container, Paper, CircularProgress, Snackbar } from '@mui/material'
 
 import Navbar from '../common-components/Navbar'
-import { getProfileGuest } from '../api/api'
+import { getProfileGuest, saveProfileGuest } from '../api/api'
+import Utility from '../utility'
 
 export default function GuestProfile(props) {
-    const [email, setEmail] = useState('')
-    const [guest, setGuest] = useState([])
+    const [isEditing, setIsEditing] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [email, setEmail] = useState('');
 
     useEffect(() => {
-        getProfileGuest()
+        getProfileGuest(sessionStorage.getItem('userId'))
             .then((res) => {
-                setGuest(res.data)
+                setFirstName(res.data.fname);
+                setLastName(res.data.lname);
+                setPhone(res.data.phone);
+                setEmail(res.data.email);
+                setIsLoading(false);
             })
             .catch((err) => console.error(err))
     }, [])
 
     const onEmailSubmit = (e) => {
         e.preventDefault()
-        console.log(email)
+    }
+
+    const handleChange = (event) => {
+        const inputName = event.target.name;
+        const inputValue = event.target.value;
+
+        switch (inputName) {
+            case 'fname':
+                setFirstName(inputValue);
+                break;
+            case 'lname':
+                setLastName(inputValue);
+                break;
+            case 'phone':
+                setPhone(inputValue);
+                break;
+            case 'email':
+                setEmail(inputValue);
+                break;
+            default:
+                return;
+        }
+    }
+
+    const isFirstNameValid = !!firstName && firstName.length;
+    const isLastNameValid = !!lastName && lastName.length;
+    const isPhoneValid = !!phone && Utility.isPhoneValid(phone);
+    const isEmailValid = !!email && Utility.isEmailValid(email);
+
+
+    const editingView = isLoading ? (
+        <Box sx={{
+            display: 'flex',
+            justifyContent: 'center'
+        }}>
+            <CircularProgress />
+        </Box> 
+    ) : (
+        <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2
+        }}>
+            
+
+
+            <Box sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 2,
+                '& > .MuiTextField-root': {
+                    flex: '1 1 0'
+                }
+            }}>
+                <TextField
+                    label="First name"
+                    name="fname"
+                    type="text"
+                    variant="standard"
+                    value={firstName}
+                    error={!isFirstNameValid}
+                    helperText={
+                        !isFirstNameValid ?
+                            'First name is invalid' :
+                            null
+                    }
+                    disabled={!isEditing}
+                    onChange={handleChange}
+                />
+                <TextField
+                    label="Last name"
+                    name="lname"
+                    type="text"
+                    variant="standard"
+                    value={lastName}
+                    error={!isLastNameValid}
+                    helperText={
+                        !isLastNameValid ?
+                            'Last name is invalid' :
+                            null
+                    }
+                    disabled={!isEditing}
+                    onChange={handleChange}
+                />
+            </Box>
+            <TextField
+                label="Phone number"
+                name="phone"
+                type="tel"
+                variant="standard"
+                value={phone}
+                error={!isPhoneValid}
+                helperText={
+                    !isPhoneValid ?
+                        'Phone number is invalid' :
+                        null
+                }
+                disabled={!isEditing}
+                onChange={handleChange}
+            />
+            <TextField
+                label="Email"
+                name="email"
+                type="email"
+                variant="standard"
+                value={email}
+                error={!isEmailValid}
+                helperText={
+                    !isEmailValid ?
+                        'Email is invalid' :
+                        null
+                }
+                disabled={!isEditing}
+                onChange={handleChange}
+            />
+        </Box>
+    )
+
+    const saveProfile = async () => {
+        // Save data
+        const profile = {
+            guestid: sessionStorage.getItem('userId'),
+            fname: firstName,
+            lname: lastName,
+            phone,
+            email
+        }
+
+        setIsEditing(false);
+
+        await saveProfileGuest(profile)
+
+        setSnackbarOpen(true);
+    }
+
+    const startEditing = () => {
+        setIsEditing(true);
     }
 
     return (
-        <div>
+        <>
             <Navbar isGuestMode={true} />
-            <Box ml={2}>
-                <Typography variant="h5" component="div">
-                    User Info
-                </Typography>
-                <Typography color="text.secondary">
-                    Name: {guest.name}
-                </Typography>
-                <Typography color="text.secondary">
-                    Phone: {guest.phone}
-                </Typography>
-                <Typography mb={2} color="text.secondary">
-                    Email: {guest.email}
-                </Typography>
-                <Button variant="contained" size="small">
-                    Edit Profile
-                </Button>
-            </Box>
+            <Container>
+                <Paper component={Box} p={2} variant="outlined" sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2
+                }}>
+                    <Typography variant="h5" component="div">
+                        User Info
+                    </Typography>
 
-            <Box ml={2} mt={5}>
-                <Typography variant="h5" component="div">
-                    Set Email Notifications
-                </Typography>
-                <form>
-                    <TextField
-                        id="filled-basic"
-                        label="Enter Email"
-                        variant="filled"
-                        onChange={(event) => {
-                            setEmail(event.target.value)
-                        }}
-                    />
-                    <br></br>
-                    <br></br>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        size="small"
-                        onClick={onEmailSubmit}
-                    >
-                        Submit
-                    </Button>
-                </form>
-            </Box>
-        </div>
+                    {editingView}
+                    <Box sx={{ flex: '1 1 0' }}>
+                        <Button
+                            variant="contained"
+                            size="small"
+                            onClick={isEditing ? saveProfile : startEditing}
+                        >
+                            {isEditing ? 'Save Profile' : 'Edit Profile'}
+                        </Button>
+                    </Box >
+                    
+                </Paper>
+
+                <Paper component={Box} p={2} mt={4} variant="outlined">
+                    <Typography variant="h5" component="div">
+                        Set Email Notifications
+                    </Typography>
+                    <form>
+                        <TextField
+                            id="filled-basic"
+                            label="Enter Email"
+                            variant="filled"
+                            onChange={(event) => {
+                                setEmail(event.target.value)
+                            }}
+                        />
+                        <br></br>
+                        <br></br>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            size="small"
+                            onClick={onEmailSubmit}
+                        >
+                            Submit
+                        </Button>
+                    </form>
+                </Paper>
+
+                <Snackbar
+                    open={snackbarOpen}
+                    autoHideDuration={5000}
+                    onClose={() => setSnackbarOpen(false)}
+                    message="Profile updated"
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center'
+                    }}
+                />
+            </Container>
+        </>
     )
 }
