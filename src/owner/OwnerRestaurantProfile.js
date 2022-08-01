@@ -1,8 +1,14 @@
 import { Box, TextField, Typography } from '@mui/material'
+import Autocomplete from "react-google-autocomplete";
+
+//  - add API Key to .env @Rauf 
+const API_KEY = "AIzaSyDYwipDM1p4k_JDS4f4d65bTtosobHOGRo";
+
 
 export default function OwnerRestaurantProfile({
     name,
     address,
+    isAddrSelected,
     phone,
     capacity,
     openingTime,
@@ -11,6 +17,7 @@ export default function OwnerRestaurantProfile({
     reservationInterval,
     setName,
     setAddress,
+    setIsAddrSelected,
     setPhone,
     setCapacity,
     setOpeningTime,
@@ -19,6 +26,15 @@ export default function OwnerRestaurantProfile({
     setReservationInterval,
 }) {
     const isPhoneValid = phone.match(/[0-9]{10}/)
+
+    const placeSelected = async (place) => {
+        let selectedAddr = place.formatted_address;
+        setAddress(selectedAddr);
+        setIsAddrSelected(true);
+        // const results = await getGeocode({ address: selectedAddr });
+        // const { lat, lng } = await getLatLng(results[0]);
+        // console.log("lat: " + lat + " Lng: " + lng);
+    }
 
     return (
         <Box
@@ -48,12 +64,14 @@ export default function OwnerRestaurantProfile({
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                 />
-                <TextField
-                    label="Restaurant address"
-                    type="text"
-                    variant="standard"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
+                <Autocomplete
+                    apiKey={API_KEY}
+                    onPlaceSelected={placeSelected}
+                    options={{
+                        types: ["address"],
+                        componentRestrictions: { country: "ca" },
+                    }}
+                    style={{ width: "100%", height: "2rem", margin: "16.5px 0 0 0", }}
                 />
                 <TextField
                     label="Restaurant phone number"

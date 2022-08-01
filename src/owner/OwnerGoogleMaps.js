@@ -1,15 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import { GoogleMap, useLoadScript, MarkerF, InfoWindowF } from '@react-google-maps/api';
 import {
   getGeocode,
   getLatLng,
 } from "use-places-autocomplete";
 
-// TODO: 
 //  - add API Key to .env @Rauf 
-//  - Move Input Address box to OwnerRestaurantProfile.js add restaurant form
-//  - Replace hardcoded values with DB stored coordinates..................
-//  - Pull Restaurants from DB and show markers with Restaurant Names  
 const API_KEY = "AIzaSyDYwipDM1p4k_JDS4f4d65bTtosobHOGRo";
 
 const center = {
@@ -30,8 +26,7 @@ const markerDescStyle = {
   outline: 0
 }
 
-
-export default function GuestGoogleMaps({ allRestaurants }) {
+export default function OwnerGoogleMaps({ allRestaurants }) {
   // using state prevents warnings in LoadScript
   const [libs] = useState(['places']);
 
@@ -43,7 +38,6 @@ export default function GuestGoogleMaps({ allRestaurants }) {
   if (!isLoaded) {
     return <div>Loading Google Maps...</div>
   } else {
-    // updateCoordsArray(props);
     return <Map allRestaurants={allRestaurants} />
   }
 }
@@ -88,11 +82,9 @@ const updateCoordsArray = async (allRestaurants, coordsArrayState) => {
       coords.push({ lat, lng });
     }
   });
-  setTimeout(() => {
-    console.log(coordsArrayState);
-  }, 200);
-
 }
 
 let coords = [
 ];
+
+
