@@ -89,6 +89,7 @@ export default function Login() {
                         localStorage.setItem('isOwner', 'false')
                         // TODO: instead of storing userId in sessionStorage, store userId at the backend using express-session
                         sessionStorage.setItem('userId', res.data.guestid)
+                        sessionStorage.setItem('userEmail', res.data.email)
                         setTimeout(() => {
                             navigate('/guest/main')
                         }, AUTO_NAVIGATE_DELAY)
@@ -111,6 +112,7 @@ export default function Login() {
                         localStorage.setItem('isLoggedIn', 'true')
                         localStorage.setItem('isOwner', 'true')
                         sessionStorage.setItem('userId', res.data.ownerid) // todo: store userid at the backend instead of here
+                        sessionStorage.setItem('userEmail', res.data.email)
                         setTimeout(() => {
                             navigate('/owner/main')
                         }, AUTO_NAVIGATE_DELAY)

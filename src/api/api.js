@@ -96,3 +96,10 @@ export const deleteReservationGuest = (reservationId) => {
         },
     })
 }
+
+export const sendEmailConfirmation = (email, emailText) => {
+    return axios.post(`${apiUrl}/api/guest/sendEmailConfirmation`, {
+        email: email,
+        emailText: emailText,
+    })
+}

@@ -4,7 +4,8 @@ let path = require('path')
 let cors = require('cors')
 let guests = require('./testGuests')
 let Knex = require('knex')
-var session = require('express-session')
+let nodemailer = require('nodemailer')
+// var session = require('express-session')
 
 let app = express()
 let port = process.env.PORT || 8080
@@ -360,6 +361,40 @@ app.get('/api/guest/getReservationsWithRestaurantsData', async (req, res) => {
             restaurant[0].reservationid = reservations[index].reservationid
         })
         res.json(restaurants.flat(1))
+    } catch (e) {
+        console.error(e)
+        res.status(500).json()
+    }
+})
+
+app.post('/api/guest/sendEmailConfirmation', async (req, res) => {
+    try {
+        console.log(req.body)
+        // e-mail message options
+        let mailOptions = {
+            from: 'easybook2022@hotmail.com',
+            to: req.body.email,
+            subject: 'Your booking is confirmed!',
+            text: req.body.emailText,
+        }
+
+        // e-mail transport configuration
+        let transporter = nodemailer.createTransport({
+            service: 'hotmail',
+            auth: {
+                user: 'easybook2022@hotmail.com',
+                pass: 'easybook12345',
+            },
+        })
+
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error)
+            } else {
+                console.log('Email sent: ' + info.response)
+            }
+        })
+        res.json({})
     } catch (e) {
         console.error(e)
         res.status(500).json()
