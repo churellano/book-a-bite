@@ -9,7 +9,7 @@ import { getAllRestaurantsOwner } from '../api/api'
 import OwnerGoogleMaps from './OwnerGoogleMaps.js'
 
 export default function OwnerMain() {
-    const [restraurants, setRestraurants] = useState([])
+    const [restaurant, setRestraurants] = useState([])
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -29,7 +29,7 @@ export default function OwnerMain() {
             <Navbar isGuestMode={false} />
             <OwnerGoogleMaps allRestaurants={restraurants} />
             <Grid container spacing={2}>
-                {restraurants.map((rest) => (
+                {restaurant.map((rest) => (
                     <Grid key={rest.address} item xs={12} sm={6}>
                         <RestaurantListItem data={rest} page="ownerMain" />
                     </Grid>

@@ -11,7 +11,11 @@ import {
     Checkbox,
 } from '@mui/material'
 import { TextField, Button, Link } from '@mui/material'
-import { signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from 'firebase/auth'
+import {
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    sendPasswordResetEmail,
+} from 'firebase/auth'
 
 import { auth } from '../firebase-config'
 import { loginGuest, loginOwner } from '../api/api'
@@ -25,8 +29,8 @@ export default function Login() {
     const AUTO_NAVIGATE_DELAY = 2000
 
     const handleEmailChange = (event) => {
-        setEmail(event.target.value);
-    };
+        setEmail(event.target.value)
+    }
 
     const handleCheckboxChange = () => {
         setisOwnerChecked(!isOwnerChecked)
@@ -39,7 +43,7 @@ export default function Login() {
             })
             .catch((error) => {
                 displayFirebaseError(error)
-            });
+            })
     }
 
     const autoNavigateIfLoggedIn = useCallback(() => {
@@ -80,7 +84,6 @@ export default function Login() {
         }
     }, [autoNavigateIfLoggedIn])
 
-
     const submit = (event) => {
         event.preventDefault()
         const data = new FormData(event.currentTarget)
@@ -101,13 +104,15 @@ export default function Login() {
                         )
                         localStorage.setItem('isLoggedIn', 'true')
                         localStorage.setItem('isOwner', 'false')
-                        sessionStorage.setItem('userId', res.data.guestid) // TODO: instead of storing userId in sessionStorage, store userId at the backend using express-session
+                        // TODO: instead of storing userId in sessionStorage, store userId at the backend using express-session
+                        sessionStorage.setItem('userId', res.data.guestid)
+                        sessionStorage.setItem('userEmail', res.data.email)
                         setTimeout(() => {
                             navigate('/guest/main')
                         }, AUTO_NAVIGATE_DELAY)
                     } else {
                         // user not found in DB
-                        setErrorMsg("Guest not found")
+                        setErrorMsg('Guest not found')
                         setShowError(true)
                     }
                 })
@@ -125,13 +130,14 @@ export default function Login() {
                         )
                         localStorage.setItem('isLoggedIn', 'true')
                         localStorage.setItem('isOwner', 'true')
-                        sessionStorage.setItem('userId', res.data.ownerid) // TODO: store userId at the backend using express-session
+                        sessionStorage.setItem('userId', res.data.ownerid) // todo: store userid at the backend instead of here
+                        sessionStorage.setItem('userEmail', res.data.email)
                         setTimeout(() => {
                             navigate('/owner/main')
                         }, AUTO_NAVIGATE_DELAY)
                     } else {
                         // user not found in DB
-                        setErrorMsg("Owner not found")
+                        setErrorMsg('Owner not found')
                         setShowError(true)
                     }
                 })
@@ -143,16 +149,18 @@ export default function Login() {
 
     const displayFirebaseError = (e) => {
         switch (e.code) {
-            case "auth/wrong-password":
-                setErrorMsg("Incorrect password. Please try again")
-                break;
-            case "auth/user-not-found":
-                setErrorMsg("Please enter an existing email to reset your password")
-                break;
+            case 'auth/wrong-password':
+                setErrorMsg('Incorrect password. Please try again')
+                break
+            case 'auth/user-not-found':
+                setErrorMsg(
+                    'Please enter an existing email to reset your password'
+                )
+                break
             default:
-                setErrorMsg("Unhandled Firebase Error")
+                setErrorMsg('Unhandled Firebase Error')
                 console.warn(e.message)
-                break;
+                break
         }
         setShowError(true)
     }
@@ -208,7 +216,6 @@ export default function Login() {
                                         sx={{ ml: 2 }}
                                     />
                                 }
-
                                 label="Sign in as Owner?"
                             />
 
@@ -223,7 +230,11 @@ export default function Login() {
                             </Grid>
 
                             <Grid item xs={6} sm={6}>
-                                <Link href="#" variant="body1" onClickCapture={forgotPassword}>
+                                <Link
+                                    href="#"
+                                    variant="body1"
+                                    onClickCapture={forgotPassword}
+                                >
                                     Forgot Your Password?
                                 </Link>
                             </Grid>

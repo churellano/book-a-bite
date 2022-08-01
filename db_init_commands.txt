@@ -39,7 +39,7 @@ CREATE TABLE reservations (
     guestID INTEGER,
     restaurantID INTEGER,
     bookingTime TIMESTAMP WITH TIME ZONE,
-    duration INTEGER,
+    duration NUMERIC,
     note TEXT,
     FOREIGN KEY(guestID) REFERENCES guests(guestID),
     FOREIGN KEY(restaurantID) REFERENCES restaurants(restaurantID),

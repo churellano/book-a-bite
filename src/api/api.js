@@ -58,8 +58,18 @@ export const deleteRestaurantOwner = (restaurantId) => {
     })
 }
 
-export const getProfileGuest = () => {
-    return axios.get(`${apiUrl}/api/guest/profile`)
+export const getProfileGuest = (guestid) => {
+    return axios.get(`${apiUrl}/api/guest/profile`, {
+        params: {
+            guestId: guestid
+        }
+    })
+}
+
+export const saveProfileGuest = (profile) => {
+    return axios.put(`${apiUrl}/api/guest/profile`, {
+        data: profile
+    })
 }
 
 export const getAllRestaurantsGuest = () => {
@@ -94,5 +104,12 @@ export const deleteReservationGuest = (reservationId) => {
         data: {
             reservationId: reservationId,
         },
+    })
+}
+
+export const sendEmailConfirmation = (email, emailText) => {
+    return axios.post(`${apiUrl}/api/guest/sendEmailConfirmation`, {
+        email: email,
+        emailText: emailText,
     })
 }

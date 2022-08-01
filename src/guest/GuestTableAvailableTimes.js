@@ -1,44 +1,51 @@
 import { useState } from 'react'
-import { Box, List, ListItemButton, Paper, Snackbar, Typography } from '@mui/material'
+import {
+    Box,
+    List,
+    ListItemButton,
+    Paper,
+    Snackbar,
+    Typography,
+} from '@mui/material'
 
 import GuestConfirmReservationModal from './GuestConfirmReservationModal'
 import Utility from '../utility'
-import { addReservationGuest } from '../api/api'
+import { addReservationGuest, sendEmailConfirmation } from '../api/api'
 
 export default function GuestTableAvailableTimes({
     restaurantId,
     availableTimes,
     minimumReservationDuration,
     tableCapacity,
-    clearSelectedTable
+    clearSelectedTable,
 }) {
-    const [open, setOpen] = useState(false);
-    const [selectedTime, setSelectedTime] = useState(null);
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [open, setOpen] = useState(false)
+    const [selectedTime, setSelectedTime] = useState(null)
+    const [snackbarOpen, setSnackbarOpen] = useState(false)
 
-    const [durationHours, setDurationHours] = useState(1);
-    const [durationMinutes, setDurationMinutes] = useState(0);
-    const [numberOfGuests, setNumberOfGuests] = useState(1);
-    const [note, setNote] = useState('');
+    const [durationHours, setDurationHours] = useState(1)
+    const [durationMinutes, setDurationMinutes] = useState(0)
+    const [numberOfGuests, setNumberOfGuests] = useState(1)
+    const [note, setNote] = useState('')
 
     const handleChange = (event) => {
-        const inputName = event.target.name;
-        const inputValue =  event.target.value;
+        const inputName = event.target.name
+        const inputValue = event.target.value
         switch (inputName) {
             case 'hours':
-                setDurationHours(+inputValue || 0);
-                break;
+                setDurationHours(+inputValue || 0)
+                break
             case 'minutes':
-                setDurationMinutes(+inputValue || 0);
-                break;
+                setDurationMinutes(+inputValue || 0)
+                break
             case 'numberOfGuests':
-                setNumberOfGuests(+inputValue || 0);
-                break;
+                setNumberOfGuests(+inputValue || 0)
+                break
             case 'note':
-                setNote(inputValue.trim());
-                break;
+                setNote(inputValue.trim())
+                break
             default:
-                return;
+                return
         }
     }
 
@@ -55,15 +62,20 @@ export default function GuestTableAvailableTimes({
                 tableId: selectedTime.tableId,
                 restaurantId,
                 bookingTime: selectedTime.bookingTime,
-                duration: durationHours + Utility.minutesToHours(durationMinutes),
-                note
-            };
+                duration:
+                    durationHours + Utility.minutesToHours(durationMinutes),
+                note,
+            }
 
             await addReservationGuest(reservation)
+            await sendEmailConfirmation(
+                sessionStorage.getItem('userEmail'),
+                'Your reservation has been confirmed!'
+            )
 
             setOpen(false)
-            clearSelectedTable();
-            setSnackbarOpen(true);
+            clearSelectedTable()
+            setSnackbarOpen(true)
         } catch (e) {
             console.error(e)
         }

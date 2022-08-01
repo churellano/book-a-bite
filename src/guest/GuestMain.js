@@ -7,7 +7,7 @@ import { getAllRestaurantsGuest } from '../api/api'
 import GuestGoogleMaps from './GuestGoogleMaps.js'
 
 export default function GuestMain() {
-    const [restraurants, setRestraurants] = useState([])
+    const [restaurant, setRestraurants] = useState([])
 
     useEffect(() => {
         getAllRestaurantsGuest()
@@ -25,11 +25,12 @@ export default function GuestMain() {
             </Typography>
             <GuestGoogleMaps allRestaurants={restraurants} />
             <Grid container spacing={2}>
-                {restraurants.map((rest) => (
-                    <Grid key={rest.address} item xs={12} sm={6}>
-                        <RestaurantListItem data={rest} page="guestMain" />
-                    </Grid>
-                ))}
+                {Array.isArray(restaurant) &&
+                    restaurant.map((rest) => (
+                        <Grid key={rest.address} item xs={12} sm={6}>
+                            <RestaurantListItem data={rest} page="guestMain" />
+                        </Grid>
+                    ))}
             </Grid>
         </div>
     )
