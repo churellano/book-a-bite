@@ -35,7 +35,6 @@ export default function Login() {
     const forgotPassword = () => {
         sendPasswordResetEmail(auth, email)
             .then(() => {
-                console.log("Password reset email sent!");
                 alert("Password reset email sent! Please check your email for a link")
             })
             .catch((error) => {

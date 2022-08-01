@@ -23,6 +23,7 @@ export default function GuestMain() {
             <Typography variant="h4" component="div" mb={3} textAlign="center">
                 Book a Table!
             </Typography>
+            <GuestGoogleMaps allRestaurants={restraurants} />
             <Grid container spacing={2}>
                 {restraurants.map((rest) => (
                     <Grid key={rest.address} item xs={12} sm={6}>
@@ -30,7 +31,6 @@ export default function GuestMain() {
                     </Grid>
                 ))}
             </Grid>
-            <GuestGoogleMaps />
         </div>
     )
 }
