@@ -7,9 +7,6 @@ import {
 
 // TODO: 
 //  - add API Key to .env @Rauf 
-//  - Move Input Address box to OwnerRestaurantProfile.js add restaurant form
-//  - Replace hardcoded values with DB stored coordinates..................
-//  - Pull Restaurants from DB and show markers with Restaurant Names  
 const API_KEY = "AIzaSyDYwipDM1p4k_JDS4f4d65bTtosobHOGRo";
 
 const center = {
@@ -43,7 +40,6 @@ export default function GuestGoogleMaps({ allRestaurants }) {
   if (!isLoaded) {
     return <div>Loading Google Maps...</div>
   } else {
-    // updateCoordsArray(props);
     return <Map allRestaurants={allRestaurants} />
   }
 }
@@ -53,7 +49,7 @@ function Map({ allRestaurants }) {
   const [coordsArrayState, setCoordsArrayState] = useState([]);
 
   useEffect(() => {
-    updateCoordsArray(allRestaurants, coordsArrayState);
+    updateCoordsArray(allRestaurants);
     setTimeout(() => {
       setCoordsArrayState(coords);
     }, 3000);
@@ -80,7 +76,7 @@ function Map({ allRestaurants }) {
 };
 
 // convert restaurant addresses --> Coordinates for Map Markers 
-const updateCoordsArray = async (allRestaurants, coordsArrayState) => {
+const updateCoordsArray = async (allRestaurants) => {
   allRestaurants.forEach(async (rest) => {
     const results = await getGeocode({ address: rest.address });
     const { lat, lng } = await getLatLng(results[0]);
@@ -88,11 +84,7 @@ const updateCoordsArray = async (allRestaurants, coordsArrayState) => {
       coords.push({ lat, lng });
     }
   });
-  setTimeout(() => {
-    console.log(coordsArrayState);
-  }, 200);
 
 }
 
-let coords = [
-];
+let coords = [];
