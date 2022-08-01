@@ -98,6 +98,8 @@ app.post('/api/addGuest', async (req, res) => {
             ])
             .into('guests')
         console.log('Added new guest', result)
+
+        console.log('Request', req.body)
         res.json(result)
     } catch (e) {
         console.error(e)
@@ -357,8 +359,56 @@ app.get('/api/guest/getReservationsWithRestaurantsData', async (req, res) => {
     }
 })
 
-app.get('/api/guest/profile', (req, res) => {
-    res.json(guests[0])
+app.get('/api/guest/profile', async (req, res) => {
+    try {
+        const result = await pool('guests')
+            .where('guestid', req.query.guestId)
+            .select('*');
+
+        console.log(result[0]);
+
+        res.json(result[0]);
+
+    } catch (e) {
+        console.error(e);
+        res.status(500).json();
+    }
+})
+
+// Save guest profile
+app.put('/api/guest/profile', async (req, res) => {
+    try {
+        const {
+            guestid,
+            fname, 
+            lname,
+            phone,
+            email
+        } = req.body.data;
+
+        const result = await pool('guests')
+            .where('guestid', guestid)
+            .update({
+                fname,
+                lname,
+                phone,
+                email
+            })
+            .returning([
+                'fname',
+                'lname',
+                'phone',
+                'email'
+            ]);
+
+        console.log('Updated guest profile', result[0]);
+
+        res.json(result[0]);
+
+    } catch (e) {
+        console.error(e);
+        res.status(500).json();
+    }
 })
 
 app.get('/api/owner/main', (req, res) => {
