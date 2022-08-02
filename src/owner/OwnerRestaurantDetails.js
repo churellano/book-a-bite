@@ -178,25 +178,27 @@ export default function OwnerRestaurantDetails() {
                         >
                             Save Restaurant
                         </Button>
-                        {tab === '1' ? <Button
-                            variant="contained"
-                            color={
+                        {tab === '1' ? 
+                            <Button
+                                variant="outlined"
+                                color={
                                 isCreatingNewTableLayout ?
                                     'error' :
                                     'primary'
-                            }
-                            onClick={
+                                }
+                                onClick={
                                 isCreatingNewTableLayout ?
                                     cancelResetRestaurantMap :
                                     resetRestaurantMap
-                            }
-                        >
+                                }
+                            >
                             {
                                 isCreatingNewTableLayout ?
                                     'Cancel New Restaurant Map' :
                                     'Create New Restaurant Map'
                             }
-                        </Button> : null}
+                            </Button> : null
+                        }
                         <TabList onChange={(e, newTab) => setTab(newTab)}>
                             <Tab label="Restaurant information" value="0" />
                             <Tab label="Restaurant map" value="1" />

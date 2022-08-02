@@ -59,6 +59,8 @@ export default function CreateRestaurantMapTabPanel({
                 }}
                 variant="standard"
                 value={tableCapacity}
+                error={isCreatingTable && tableCapacity <= 0}
+                helperText={isCreatingTable && tableCapacity <= 0 ? 'Table must seat at least 1 person.' : null}
                 onChange={(e) => setTableCapacity(parseInt(e.target.value, 10))}
                 disabled={!isCreatingTable}
             />
