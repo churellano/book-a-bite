@@ -27,7 +27,9 @@ export default function OwnerMain() {
     return (
         <div>
             <Navbar isGuestMode={false} />
-            <OwnerGoogleMaps allRestaurants={restaurant} />
+            {Array.isArray(restaurant) && restaurant.length > 0 && (
+                <OwnerGoogleMaps allRestaurants={restaurant} />
+            )}
             <Grid container spacing={2}>
                 {restaurant.map((rest) => (
                     <Grid key={rest.address} item xs={12} sm={6}>

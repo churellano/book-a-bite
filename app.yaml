@@ -19,6 +19,7 @@ env_variables:
     DB_NAME: main-db
     DB_HOST: 172.27.0.2
     DB_PORT: 5432
+    GOOGLE_MAPS_API_KEY: AIzaSyDYwipDM1p4k_JDS4f4d65bTtosobHOGRo
 
 vpc_access_connector:
     name: 'projects/cmpt-372-project/locations/us-central1/connectors/connect-to-sql'
