@@ -68,6 +68,8 @@ export default function GuestSignUp() {
                 )
                 localStorage.setItem("isOwner", "false");
                 localStorage.setItem("isLoggedIn", "true");
+                sessionStorage.setItem('userId', res.data.guestid)
+                sessionStorage.setItem('userEmail', res.data.email)
                 navigate('/')
             })
             .catch((error) => {
@@ -165,7 +167,7 @@ export default function GuestSignUp() {
                         <Grid container justifyContent="flex-end">
                             <Grid item>
                                 <Link href="/" variant="body1">
-                                    Have an exisiting account? Sign In
+                                    Have an existing account? Sign In.
                                 </Link>
                             </Grid>
                         </Grid>

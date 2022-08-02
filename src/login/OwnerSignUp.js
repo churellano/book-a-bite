@@ -67,6 +67,8 @@ export default function OwnerSignUp() {
                 )
                 localStorage.setItem("isOwner", "true");
                 localStorage.setItem("isLoggedIn", "true");
+                sessionStorage.setItem('userId', res.data.guestid)
+                sessionStorage.setItem('userEmail', res.data.email)
                 navigate('/')
             })
             .catch((error) => {
