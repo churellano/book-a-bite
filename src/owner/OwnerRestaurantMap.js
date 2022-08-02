@@ -86,9 +86,6 @@ export default function OwnerRestaurantMap({
         setIsDeletingTables(false);
     }
 
-    console.log('tables', tables);
-    console.log('cells', cells);
-
     const finishTable = () => {
         const table = {
             id: nextTableId,
@@ -96,8 +93,6 @@ export default function OwnerRestaurantMap({
             capacity: tableCapacity,
             cells: cells.filter((c) => c.selected === true),
         }
-
-        console.log(table);
 
         setNextTableId(nextTableId + 1);
 
@@ -148,10 +143,6 @@ export default function OwnerRestaurantMap({
             const tableIdToDelete = clickedCell.tableId;
             const tableToDelete = tables.find(t => t.id === tableIdToDelete);
 
-            console.log(tableIdToDelete);
-
-            console.log(tablesToDelete);
-            
             // Move table to tablesToDelete array
             setTables([...tables.filter(t => t.id !== tableIdToDelete)]);
             setTablesToDelete([
@@ -172,7 +163,6 @@ export default function OwnerRestaurantMap({
 
     const handleChange = (event) => {
        const { name, value } = event.target;
-       console.log(name, value);
        switch (name) {
         case 'width':
             if (value > MAX_ROWS) {
