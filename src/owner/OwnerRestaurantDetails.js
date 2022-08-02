@@ -26,7 +26,7 @@ export default function OwnerRestaurantDetails() {
         location.state ? location.state.data.address : ''
     )
     const [isAddrSelected, setIsAddrSelected] = useState(
-        location.state ? location.state.data.isAddrSelected : false
+        location.state ? true : false
     )
 
     const [phone, setPhone] = useState(
@@ -139,7 +139,8 @@ export default function OwnerRestaurantDetails() {
                 tables: JSON.stringify(tables),
             }
             if (!isAddrSelected) {
-                throw "Please select a valid address";
+                alert("Please select a valid address/location for of your Restaurant")
+                throw "No valid Address Selected by Autocomplete";
             }
 
             await saveRestaurantOwner(restaurant)
