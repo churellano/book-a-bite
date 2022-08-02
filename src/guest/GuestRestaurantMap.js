@@ -65,7 +65,13 @@ function createAvailableTimes(
                 timeInHours < startTimeInHours || endTimeInHours <= timeInHours
             )
         })
-    })
+    });
+
+    // Remove time slots that are before the current time
+    availableTimes = availableTimes.filter(a => {
+        const currentDate = new Date();
+        return a.bookingTime.getTime() > currentDate.getTime();
+    });
 
     return availableTimes;
 }
