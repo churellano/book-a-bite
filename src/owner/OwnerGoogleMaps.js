@@ -7,8 +7,10 @@ import {
 } from '@react-google-maps/api'
 import { getGeocode, getLatLng } from 'use-places-autocomplete'
 
-//  - add API Key to .env @Rauf
-const API_KEY = 'AIzaSyDYwipDM1p4k_JDS4f4d65bTtosobHOGRo'
+const API_KEY =
+    process.env.NODE_ENV === 'production'
+        ? process.env.GOOGLE_MAPS_API_KEY
+        : 'AIzaSyDYwipDM1p4k_JDS4f4d65bTtosobHOGRo'
 
 const center = {
     lat: 49.26,
