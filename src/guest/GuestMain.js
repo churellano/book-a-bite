@@ -43,7 +43,7 @@ export default function GuestMain() {
                     >
                         <CircularProgress />
                     </Box>
-                ) : restaurants.length ? (
+                ) : Array.isArray(restaurants) && restaurants.length ? (
                     <div>
                         <GuestGoogleMaps allRestaurants={restaurants} />
                         <Grid container spacing={2}>

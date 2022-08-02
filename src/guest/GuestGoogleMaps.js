@@ -49,16 +49,11 @@ function Map({ allRestaurants }) {
     const [coordsArrayState, setCoordsArrayState] = useState([])
     const [showingInfoWindow, setShowingInfoWindow] = useState(false)
 
-    const onMarkerClick = (index) => {
-        let copy = coordsArrayState
-        copy[index].isClicked = true
-        setCoordsArrayState(copy)
+    const onMarkerClick = () => {
         setShowingInfoWindow(true)
     }
 
-    const onInfoWindowClose = (index) => {
-        coordsArrayState[index].isClicked = false
-        setCoordsArrayState(coordsArrayState)
+    const onInfoWindowClose = () => {
         setShowingInfoWindow(false)
     }
 
@@ -93,12 +88,12 @@ function Map({ allRestaurants }) {
                     key={index}
                     position={{ lat: coord.lat, lng: coord.lng }}
                     clickable
-                    onClick={() => onMarkerClick(index)}
+                    onClick={() => onMarkerClick()}
                 >
-                    {coordsArrayState[index].isClicked && (
+                    {showingInfoWindow && (
                         <InfoWindow
                             position={{ lat: coord.lat, lng: coord.lng }}
-                            onCloseClick={() => onInfoWindowClose(index)}
+                            onCloseClick={() => onInfoWindowClose()}
                         >
                             <div style={markerDescStyle}>
                                 <p>{allRestaurants[index].name}</p>
