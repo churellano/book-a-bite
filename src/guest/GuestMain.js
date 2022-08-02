@@ -24,7 +24,9 @@ export default function GuestMain() {
     return (
         <div>
             <Navbar isGuestMode={true} />
-            <Container>
+            <Container sx={{
+                my: 4
+            }}>
                 <Typography
                     variant="h4"
                     component="div"
