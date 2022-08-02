@@ -64,14 +64,21 @@ export default function OwnerRestaurantProfile({
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                 />
+                <Typography variant="subtitle2" component="div" mt={2} sx={{
+                    color: 'rgba(0, 0, 0, 0.6)',
+                    fontSize: '0.75rem',
+                }}>
+                    Address
+                </Typography>
                 <Autocomplete
                     apiKey={API_KEY}
                     onPlaceSelected={placeSelected}
+                    defaultValue={address}
                     options={{
                         types: ["address"],
                         componentRestrictions: { country: "ca" },
                     }}
-                    style={{ width: "100%", height: "2rem", margin: "16.5px 0 0 0", }}
+                    style={{ width: "100%", height: "2rem", margin: "0", }}
                 />
                 <TextField
                     label="Restaurant phone number"
