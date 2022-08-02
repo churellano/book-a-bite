@@ -113,7 +113,7 @@ export default function GuestConfirmReservationModal({
                         error={!isNumberOfGuestsValid}
                         helperText={
                             !isNumberOfGuestsValid ?
-                                'Number of guests must be in the range [1, 4]' :
+                                `Number of guests must be in the range [1, ${tableCapacity}]` :
                                 null
                         }
                         onChange={handleChange}
