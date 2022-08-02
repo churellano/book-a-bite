@@ -2,7 +2,6 @@
 let express = require('express')
 let path = require('path')
 let cors = require('cors')
-let guests = require('./testGuests')
 let Knex = require('knex')
 let nodemailer = require('nodemailer')
 // var session = require('express-session')
@@ -449,10 +448,6 @@ app.post('/api/guest/sendEmailConfirmation', async (req, res) => {
         console.error(e)
         res.status(500).json()
     }
-})
-
-app.get('/api/guest/profile', (req, res) => {
-    res.json(guests[0])
 })
 
 // send static files for every route
