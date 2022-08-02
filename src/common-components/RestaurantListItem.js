@@ -9,6 +9,7 @@ import RoomIcon from '@mui/icons-material/Room';
 import PhoneIcon from '@mui/icons-material/Phone';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import TodayIcon from '@mui/icons-material/Today';
+import DescriptionIcon from '@mui/icons-material/Description';
 
 import { deleteReservationGuest, deleteRestaurantOwner } from '../api/api'
 import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
@@ -126,17 +127,29 @@ export default function RestaurantListItem(props) {
                         {openStatusListItemText}
                     </ListItem>
                     {props.page === 'guestCurrentReservations' ? 
-                        <ListItem>
-                            <ListItemIcon>
-                                <TodayIcon />
-                            </ListItemIcon>
-                            <ListItemText>
-                                {new Date(data.bookingtime).toLocaleDateString(
-                                    'en-CA',
-                                    options
-                                )}
-                            </ListItemText>
-                        </ListItem> : null
+                        (<>
+                            <ListItem>
+                                <ListItemIcon>
+                                    <TodayIcon />
+                                </ListItemIcon>
+                                <ListItemText>
+                                    {new Date(data.bookingtime).toLocaleDateString(
+                                        'en-CA',
+                                        options
+                                    )}
+                                </ListItemText>
+                            </ListItem>
+                            {data.note && data.note.length ? 
+                                <ListItem>
+                                    <ListItemIcon>
+                                        <DescriptionIcon />
+                                    </ListItemIcon>
+                                    <ListItemText>
+                                        Your note: {data.note}
+                                    </ListItemText>
+                                </ListItem> : null}
+                        </>
+                        ) : null
                     }
                 </List>
             </CardContent>

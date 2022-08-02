@@ -85,7 +85,7 @@ export default function Navbar(props) {
                             display: { xs: 'none', md: 'flex' },
                             fontFamily: 'Helvetica',
                             fontWeight: 700,
-                            letterSpacing: '.3rem',
+                            letterSpacing: '.05rem',
                             color: 'inherit',
                             textDecoration: 'none',
                         }}
