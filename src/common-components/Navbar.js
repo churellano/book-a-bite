@@ -15,6 +15,7 @@ import Button from '@mui/material/Button'
 import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import AdbIcon from '@mui/icons-material/Adb'
+import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 
 import { auth } from '../firebase-config'
 
@@ -71,7 +72,7 @@ export default function Navbar(props) {
         <AppBar position="static" sx={{ mb: 5 }}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    <AdbIcon
+                    <RestaurantMenuIcon
                         sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}
                     />
                     <Typography
@@ -82,14 +83,14 @@ export default function Navbar(props) {
                         sx={{
                             mr: 2,
                             display: { xs: 'none', md: 'flex' },
-                            fontFamily: 'monospace',
+                            fontFamily: 'Helvetica',
                             fontWeight: 700,
                             letterSpacing: '.3rem',
                             color: 'inherit',
                             textDecoration: 'none',
                         }}
                     >
-                        Logo
+                        Book-A-Bite
                     </Typography>
 
                     <Box
