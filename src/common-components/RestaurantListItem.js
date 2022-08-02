@@ -87,8 +87,12 @@ export default function RestaurantListItem(props) {
     );
 
     return (
-        <Card>
-            <CardContent>
+        <Card sx={{
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+        }}>
+            <CardContent sx={{ flex: '1 1 0' }}>
                 <Typography variant="h5" component="div">
                     {data.name}
                 </Typography>
