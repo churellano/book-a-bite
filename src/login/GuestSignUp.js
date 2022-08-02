@@ -165,7 +165,7 @@ export default function GuestSignUp() {
                         <Grid container justifyContent="flex-end">
                             <Grid item>
                                 <Link href="/" variant="body1">
-                                    Have an exisiting account? Sign In
+                                    Have an existing account? Sign In.
                                 </Link>
                             </Grid>
                         </Grid>
