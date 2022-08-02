@@ -194,6 +194,9 @@ app.post('/api/owner/saveRestaurant', async (req, res) => {
 
             console.log('updatedTables', tables)
             await pool('restaurants')
+                .where({
+                    restaurantid: req.body.data.restaurantId,
+                })
                 .update({
                     tables: JSON.stringify(tables),
                 })
