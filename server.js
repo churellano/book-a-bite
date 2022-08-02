@@ -359,6 +359,7 @@ app.get('/api/guest/getReservationsWithRestaurantsData', async (req, res) => {
         restaurants.forEach((restaurant, index) => {
             restaurant[0].bookingtime = reservations[index].bookingtime
             restaurant[0].reservationid = reservations[index].reservationid
+            restaurant[0].note = reservations[index].note
         })
         res.json(restaurants.flat(1))
     } catch (e) {
