@@ -42,7 +42,7 @@ export default function GuestTableAvailableTimes({
                 setNumberOfGuests(+inputValue || 0)
                 break
             case 'note':
-                setNote(inputValue.trim())
+                setNote(inputValue)
                 break
             default:
                 return
@@ -64,7 +64,7 @@ export default function GuestTableAvailableTimes({
                 bookingTime: selectedTime.bookingTime,
                 duration:
                     durationHours + Utility.minutesToHours(durationMinutes),
-                note,
+                note: note.trim(),
             }
 
             await addReservationGuest(reservation)

@@ -24,7 +24,7 @@ export default function Navbar(props) {
               { name: 'Restaurants', link: '/guest/main' },
               {
                   name: 'Current Reservations',
-                  link: '/guest/getReservationsWithRestaurantsData',
+                  link: '/guest/reservations',
               },
           ]
         : [{ name: 'Restaurants', link: '/owner/main' }]

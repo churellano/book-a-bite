@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography'
 import RoomIcon from '@mui/icons-material/Room';
 import PhoneIcon from '@mui/icons-material/Phone';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import TodayIcon from '@mui/icons-material/Today';
 
 import { deleteReservationGuest, deleteRestaurantOwner } from '../api/api'
 import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
@@ -87,8 +88,12 @@ export default function RestaurantListItem(props) {
     );
 
     return (
-        <Card>
-            <CardContent>
+        <Card sx={{
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+        }}>
+            <CardContent sx={{ flex: '1 1 0' }}>
                 <Typography variant="h5" component="div">
                     {data.name}
                 </Typography>
@@ -120,25 +125,33 @@ export default function RestaurantListItem(props) {
                         </ListItemIcon>
                         {openStatusListItemText}
                     </ListItem>
+                    {props.page === 'guestCurrentReservations' ? 
+                        <ListItem>
+                            <ListItemIcon>
+                                <TodayIcon />
+                            </ListItemIcon>
+                            <ListItemText>
+                                {new Date(data.bookingtime).toLocaleDateString(
+                                    'en-CA',
+                                    options
+                                )}
+                            </ListItemText>
+                        </ListItem> : null
+                    }
                 </List>
-
-                {props.page === 'guestCurrentReservations' && (
-                    <Typography color="text.secondary" sx={{ mt: 4 }}>
-                        Booking Time:
-                        {new Date(data.bookingtime).toLocaleDateString(
-                            'en-CA',
-                            options
-                        )}
-                    </Typography>
-                )}
             </CardContent>
 
             {props.page === 'guestMain' && (
-                <CardActions>
+                <CardActions sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'end',
+                    gap: 1
+                }}>
                     <Button
                         component={Link}
                         to="/guest/restaurant/map"
-                        size="small"
+                        variant='contained'
                         state={data}
                     >
                         Book
@@ -147,10 +160,16 @@ export default function RestaurantListItem(props) {
             )}
 
             {props.page === 'guestCurrentReservations' && (
-                <CardActions>
+                <CardActions sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'end',
+                    gap: 1
+                }}>
                     <Button
                         onClick={() => onDeleteBooking(data.reservationid)}
-                        size="small"
+                        variant="contained"
+                        color='error'
                     >
                         Delete Booking
                     </Button>
@@ -158,10 +177,16 @@ export default function RestaurantListItem(props) {
             )}
 
             {props.page === 'ownerMain' && (
-                <CardActions>
+                <CardActions sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'end',
+                    gap: 1
+                }}>
                     <Button
                         onClick={() => onRestaurantDelete(data.restaurantid)}
-                        size="small"
+                        color="error"
+                        variant='outlined'
                     >
                         Delete
                     </Button>
@@ -169,7 +194,7 @@ export default function RestaurantListItem(props) {
                         component={Link}
                         to={`/owner/restaurant/edit`}
                         state={{ data }}
-                        size="small"
+                        variant="contained"
                     >
                         Edit
                     </Button>
