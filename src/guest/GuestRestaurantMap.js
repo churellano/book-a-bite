@@ -16,7 +16,7 @@ function createAvailableTimes(
     closingTime,
     reservationInterval,
     mininumReservationDuration,
-    getReservationsWithRestaurantsData
+    existingReservations
 ) {
     const latestReservationTime = closingTime - mininumReservationDuration
     let availableTimes = []
@@ -44,7 +44,7 @@ function createAvailableTimes(
     }
 
     // Remove available times that conflict with current reservations
-    getReservationsWithRestaurantsData.forEach((currentReservation) => {
+    existingReservations.forEach((currentReservation) => {
         const reservationDate = new Date(currentReservation.bookingtime);
 
         const startTimeHour = reservationDate.getHours()

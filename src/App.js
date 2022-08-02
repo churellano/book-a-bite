@@ -46,7 +46,7 @@ function App() {
                     }
                 />
                 <Route
-                    path="/guest/getReservationsWithRestaurantsData"
+                    path="/guest/reservations"
                     element={
                         JSON.parse(localStorage.getItem('isLoggedIn')) &&
                         !JSON.parse(localStorage.getItem('isOwner')) && (
