@@ -4,13 +4,10 @@ let path = require('path')
 let cors = require('cors')
 let Knex = require('knex')
 let nodemailer = require('nodemailer')
-// var session = require('express-session')
 
 let app = express()
 let port = process.env.PORT || 8080
-// let isProdEnv = process.env.NODE_ENV === 'production'
 
-// use this for prod
 const createTcpPool = async (config) => {
     if (process.env.NODE_ENV === 'production') {
         console.log('debug: in production')
@@ -71,24 +68,10 @@ let staticFilesOptions = {
     index: 'index.html',
 }
 
-// const corsOptions = {
-//     origin: isProdEnv
-//         ? 'https://cmpt-372-project.uc.r.appspot.com/'
-//         : 'http://localhost:3000',
-//     credentials: true,
-// }
 app.use('/', cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use('/', express.static('./build', staticFilesOptions))
-// app.use(
-//     session({
-//         name: 'session',
-//         secret: isProdEnv ? process.env.SESSION_PWD : 'secure-pwd',
-//         resave: false,
-//         maxAge: 30 * 60 * 1000, // 30 minutes
-//     })
-// )
 
 // **************************************** //
 // **        OWNER USER MODE APIS        ** //
