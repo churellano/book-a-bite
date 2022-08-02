@@ -232,7 +232,7 @@ app.delete('/api/owner/deleteRestaurant', async (req, res) => {
         res.json(result)
     } catch (e) {
         console.error(e)
-        res.status(500).json()
+        res.json(e)
     }
 })
 

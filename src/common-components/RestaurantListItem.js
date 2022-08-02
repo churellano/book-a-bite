@@ -10,10 +10,14 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import TodayIcon from '@mui/icons-material/Today';
 import DescriptionIcon from '@mui/icons-material/Description';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
 
 import { deleteReservationGuest, deleteRestaurantOwner } from '../api/api'
 import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
 import Utility from '../utility'
+import { useState } from 'react'
 
 function createOperatingHoursText(openingTime, closingTime) {
     const isOpen = Utility.isRestaurantOpen(openingTime, closingTime);
@@ -39,18 +43,31 @@ function createOperatingHoursText(openingTime, closingTime) {
 }
 
 export default function RestaurantListItem(props) {
+    const [open, setOpen] = useState(false);
+
+    const onDelete = () => {
+        setOpen(true)
+    }
+
+    const handleClose = () => {
+        setOpen(false);
+    }
+
     let data = props.data
 
-    const onRestaurantDelete = async (restaurantid) => {
+    const onRestaurantDeleteConfirmed = async (restaurantid) => {
         try {
-            await deleteRestaurantOwner(restaurantid)
+            const res = await deleteRestaurantOwner(restaurantid)
+            if(res.data.constraint === "reservations_restaurantid_fkey") {
+                window.alert("You cannot delete a restaurant with reserved tables")
+            }
             window.location.reload()
         } catch (e) {
             console.error(e)
         }
     }
 
-    const onDeleteBooking = async (reservationid) => {
+    const onReservationDeleteConfrimed = async (reservationid) => {
         try {
             await deleteReservationGuest(reservationid)
             window.location.reload()
@@ -89,130 +106,152 @@ export default function RestaurantListItem(props) {
     );
 
     return (
-        <Card sx={{
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-        }}>
-            <CardContent sx={{ flex: '1 1 0' }}>
-                <Typography variant="h5" component="div">
-                    {data.name}
-                </Typography>
+        <div>
+            <Card sx={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+            }}>
+                <CardContent sx={{ flex: '1 1 0' }}>
+                    <Typography variant="h5" component="div">
+                        {data.name}
+                    </Typography>
 
-                <List component='div'>
-                    <ListItem>
-                        <ListItemIcon>
-                            <RoomIcon />
-                        </ListItemIcon>
-                        <ListItemText
-                            primary={data.address}
-                        />
-                    </ListItem>
-                    {
-                        data.phone ? (
-                            <ListItem>
-                                <ListItemIcon>
-                                    <PhoneIcon />
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={data.phone}
-                                />
-                            </ListItem>
-                        ) : null
-                    }
-                    <ListItem>
-                        <ListItemIcon>
-                            <AccessTimeIcon />
-                        </ListItemIcon>
-                        {openStatusListItemText}
-                    </ListItem>
-                    {props.page === 'guestCurrentReservations' ? 
-                        (<>
-                            <ListItem>
-                                <ListItemIcon>
-                                    <TodayIcon />
-                                </ListItemIcon>
-                                <ListItemText>
-                                    {new Date(data.bookingtime).toLocaleDateString(
-                                        'en-CA',
-                                        options
-                                    )}
-                                </ListItemText>
-                            </ListItem>
-                            {data.note && data.note.length ? 
+                    <List component='div'>
+                        <ListItem>
+                            <ListItemIcon>
+                                <RoomIcon />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={data.address}
+                            />
+                        </ListItem>
+                        {
+                            data.phone ? (
                                 <ListItem>
                                     <ListItemIcon>
-                                        <DescriptionIcon />
+                                        <PhoneIcon />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary={data.phone}
+                                    />
+                                </ListItem>
+                            ) : null
+                        }
+                        <ListItem>
+                            <ListItemIcon>
+                                <AccessTimeIcon />
+                            </ListItemIcon>
+                            {openStatusListItemText}
+                        </ListItem>
+                        {props.page === 'guestCurrentReservations' ? 
+                            (<>
+                                <ListItem>
+                                    <ListItemIcon>
+                                        <TodayIcon />
                                     </ListItemIcon>
                                     <ListItemText>
-                                        Your note: {data.note}
+                                        {new Date(data.bookingtime).toLocaleDateString(
+                                            'en-CA',
+                                            options
+                                        )}
                                     </ListItemText>
-                                </ListItem> : null}
-                        </>
-                        ) : null
-                    }
-                </List>
-            </CardContent>
+                                </ListItem>
+                                {data.note && data.note.length ? 
+                                    <ListItem>
+                                        <ListItemIcon>
+                                            <DescriptionIcon />
+                                        </ListItemIcon>
+                                        <ListItemText>
+                                            Your note: {data.note}
+                                        </ListItemText>
+                                    </ListItem> : null}
+                            </>
+                            ) : null
+                        }
+                    </List>
+                </CardContent>
 
-            {props.page === 'guestMain' && (
-                <CardActions sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'end',
-                    gap: 1
-                }}>
-                    <Button
-                        component={Link}
-                        to="/guest/restaurant/map"
-                        variant='contained'
-                        state={data}
-                    >
-                        Book
-                    </Button>
-                </CardActions>
-            )}
+                {props.page === 'guestMain' && (
+                    <CardActions sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'end',
+                        gap: 1
+                    }}>
+                        <Button
+                            component={Link}
+                            to="/guest/restaurant/map"
+                            variant='contained'
+                            state={data}
+                        >
+                            Book
+                        </Button>
+                    </CardActions>
+                )}
 
-            {props.page === 'guestCurrentReservations' && (
-                <CardActions sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'end',
-                    gap: 1
-                }}>
-                    <Button
-                        onClick={() => onDeleteBooking(data.reservationid)}
-                        variant="contained"
-                        color='error'
-                    >
-                        Delete Booking
-                    </Button>
-                </CardActions>
-            )}
+                {props.page === 'guestCurrentReservations' && (
+                    <CardActions sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'end',
+                        gap: 1
+                    }}>
+                        <Button
+                            onClick={() => onDelete()}
+                            variant="contained"
+                            color='error'
+                        >
+                            Delete Booking
+                        </Button>
+                    </CardActions>
+                )}
 
-            {props.page === 'ownerMain' && (
-                <CardActions sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'end',
-                    gap: 1
-                }}>
-                    <Button
-                        onClick={() => onRestaurantDelete(data.restaurantid)}
-                        color="error"
-                        variant='outlined'
-                    >
-                        Delete
-                    </Button>
-                    <Button
-                        component={Link}
-                        to={`/owner/restaurant/edit`}
-                        state={{ data }}
-                        variant="contained"
-                    >
-                        Edit
-                    </Button>
-                </CardActions>
-            )}
-        </Card>
+                {props.page === 'ownerMain' && (
+                    <CardActions sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'end',
+                        gap: 1
+                    }}>
+                        <Button
+                            onClick={() => onDelete()}
+                            color="error"
+                            variant='outlined'
+                        >
+                            Delete
+                        </Button>
+                        <Button
+                            component={Link}
+                            to={`/owner/restaurant/edit`}
+                            state={{ data }}
+                            variant="contained"
+                        >
+                            Edit
+                        </Button>
+                    </CardActions>
+                )}
+            </Card>
+
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    Are you sure you want to delete the entry?
+                </DialogTitle>
+                <DialogActions>
+                {(props.page === 'ownerMain') ? 
+                    <Button onClick={() => onRestaurantDeleteConfirmed(data.restaurantid)}>Delete</Button> : 
+                    <Button onClick={() => onReservationDeleteConfrimed(data.reservationid)}>Delete</Button>
+                }
+                <Button onClick={handleClose} autoFocus>
+                    Cancel
+                </Button>
+                </DialogActions>
+            </Dialog>
+        </div>
     )
 }
