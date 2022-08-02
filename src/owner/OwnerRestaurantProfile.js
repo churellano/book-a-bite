@@ -31,9 +31,6 @@ export default function OwnerRestaurantProfile({
         let selectedAddr = place.formatted_address;
         setAddress(selectedAddr);
         setIsAddrSelected(true);
-        // const results = await getGeocode({ address: selectedAddr });
-        // const { lat, lng } = await getLatLng(results[0]);
-        // console.log("lat: " + lat + " Lng: " + lng);
     }
 
     return (
@@ -73,12 +70,12 @@ export default function OwnerRestaurantProfile({
                 <Autocomplete
                     apiKey={API_KEY}
                     onPlaceSelected={placeSelected}
-                    defaultValue={address}
                     options={{
                         types: ["address"],
                         componentRestrictions: { country: "ca" },
                     }}
                     style={{ width: "100%", height: "2rem", margin: "0", }}
+                    defaultValue={address}
                 />
                 <TextField
                     label="Restaurant phone number"
