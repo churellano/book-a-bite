@@ -140,7 +140,7 @@ export default function OwnerRestaurantDetails() {
             }
             if (!isAddrSelected) {
                 alert("Please select a valid address/location for of your Restaurant")
-                throw "No valid Address Selected by Autocomplete";
+                throw Error("No valid Address Selected by Autocomplete");
             }
 
             await saveRestaurantOwner(restaurant)

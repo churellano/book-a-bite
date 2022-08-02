@@ -74,11 +74,7 @@ export default function GuestRestaurantMap() {
     const location = useLocation();
     const {
         restaurantid,
-        ownerid,
         name,
-        address,
-        phone,
-        capacity,
         openingtime,
         closingtime,
         mapnumofrows,
