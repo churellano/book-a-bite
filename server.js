@@ -86,7 +86,7 @@ app.post('/api/addOwner', async (req, res) => {
                     lname: req.body.lname,
                     email: req.body.email,
                 },
-            ])
+            ], ['ownerid', 'email'])
             .into('owners')
         console.log('Added new owner', result)
         res.json(result)
@@ -245,7 +245,7 @@ app.post('/api/addGuest', async (req, res) => {
                     phone: req.body.phone,
                     email: req.body.email,
                 },
-            ])
+            ], ['guestid', 'email'])
             .into('guests')
         console.log('Added new guest', result)
         res.json(result)
