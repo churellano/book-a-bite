@@ -8,25 +8,23 @@ import GuestTableAvailableTimes from './GuestTableAvailableTimes'
 import { useLocation } from 'react-router-dom'
 import { getReservationsByRestaurantIdGuest } from '../api/api'
 
-function createAvailableTimes(
+function calculateAvailableTimesRange(
     restaurantId,
     tableId,
     tableName,
-    openingTime,
-    closingTime,
-    reservationInterval,
-    mininumReservationDuration,
-    existingReservations
+    date,
+    startTime,
+    endTime,
+    reservationInterval
 ) {
-    const latestReservationTime = closingTime - mininumReservationDuration
-    let availableTimes = []
+    const availableTimesRange = [];
     for (
-        let reservationStartTime = openingTime;
-        reservationStartTime <= latestReservationTime;
+        let reservationStartTime = startTime;
+        reservationStartTime <= endTime;
         reservationStartTime += reservationInterval
     ) {
-        const bookingTime = new Date()
-        const bookingHour = Math.floor(openingTime)
+        const bookingTime = new Date(date);
+        const bookingHour = Math.floor(startTime)
         const bookingMinute = Math.floor(
             (reservationStartTime - bookingHour) * 60
         )
@@ -40,7 +38,95 @@ function createAvailableTimes(
             bookingTime,
         }
 
-        availableTimes.push(availableTime)
+        availableTimesRange.push(availableTime);
+    }
+
+    return availableTimesRange;
+}
+
+function createAvailableTimes(
+    restaurantId,
+    tableId,
+    tableName,
+    openingTime,
+    closingTime,
+    reservationInterval,
+    mininumReservationDuration,
+    existingReservations
+) {
+    let availableTimes = []
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+
+    // Open 24 hours
+    if (openingTime === closingTime) {
+        // Calculate timeslots between openingTime and midnight
+        availableTimes.push(
+            ...calculateAvailableTimesRange(
+                restaurantId,
+                tableId,
+                tableName,
+                today,
+                openingTime,
+                24,
+                reservationInterval
+            )
+        );
+
+        // Calculate timeslots between midnight and closingTime
+        availableTimes.push(
+            ...calculateAvailableTimesRange(
+                restaurantId,
+                tableId,
+                tableName,
+                tomorrow,
+                0,
+                closingTime,
+                reservationInterval
+            )
+        );
+    } else if (openingTime < closingTime) {
+        // Restaurant open during the day
+        availableTimes.push(
+            ...calculateAvailableTimesRange(
+                restaurantId,
+                tableId,
+                tableName,
+                today,
+                openingTime,
+                closingTime - mininumReservationDuration,
+                reservationInterval
+            )
+        );
+    } else if (openingTime > closingTime) {
+        // Restaurant open overnight
+
+        // Times between openingTime and midnight
+        availableTimes.push(
+            ...calculateAvailableTimesRange(
+                restaurantId,
+                tableId,
+                tableName,
+                today,
+                openingTime,
+                24,
+                reservationInterval
+            )
+        );
+
+        // Times between midnight and closingTime
+        availableTimes.push(
+            ...calculateAvailableTimesRange(
+                restaurantId,
+                tableId,
+                tableName,
+                tomorrow,
+                0,
+                closingTime - mininumReservationDuration,
+                reservationInterval
+            )
+        );
     }
 
     // Remove available times that conflict with current reservations
@@ -69,8 +155,7 @@ function createAvailableTimes(
 
     // Remove time slots that are before the current time
     availableTimes = availableTimes.filter(a => {
-        const currentDate = new Date();
-        return a.bookingTime.getTime() > currentDate.getTime();
+        return a.bookingTime.getTime() > today.getTime();
     });
 
     return availableTimes;
@@ -159,7 +244,7 @@ export default function GuestRestaurantMap() {
                         +minimumreservationduration,
                         response.data
                     );
-            
+
                     setAvailableTimes(times);
                 });
         }

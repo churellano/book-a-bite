@@ -91,7 +91,8 @@ export default function GuestTableAvailableTimes({
                     maxHeight: '100%',
                 }}
             >
-                <List>
+                {availableTimes.length ? 
+                    <List>
                     {availableTimes.map((time, index) => (
                         <ListItemButton
                             key={index}
@@ -105,7 +106,9 @@ export default function GuestTableAvailableTimes({
                             </Typography>
                         </ListItemButton>
                     ))}
-                </List>
+                    </List> : 
+                    <Typography>No times currently available for this table.</Typography>
+                }
             </Paper>
             {selectedTime ? (
                 <GuestConfirmReservationModal
