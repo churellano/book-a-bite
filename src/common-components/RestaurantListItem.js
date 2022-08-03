@@ -105,8 +105,6 @@ export default function RestaurantListItem(props) {
         />
     );
 
-    console.log('data', data);
-
     return (
         <div>
             <Card sx={{

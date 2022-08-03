@@ -27,7 +27,6 @@ export default function Reservation({
   useEffect(() => {
     getProfileGuest(reservation.guestid)
       .then(response => {
-        console.log('userprofile response', response);
         setGuestUser(response.data);
       });
   }, []);

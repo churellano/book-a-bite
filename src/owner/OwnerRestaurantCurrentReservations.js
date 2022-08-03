@@ -13,10 +13,8 @@ export default function OwnerRestaurantReservations() {
   const { restaurantid: restaurantId, name } = location.state;
 
   useEffect(() => {
-    // console.log('restaurantId', data)
     getReservationsByRestaurantIdOwner(restaurantId)
         .then((response) => {
-            console.log('response', response);
             setReservations(response.data);
             setIsLoading(false);
         })
