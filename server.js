@@ -154,7 +154,7 @@ app.post('/api/owner/saveRestaurant', async (req, res) => {
                         openingtime: req.body.data.openingTime,
                         closingtime: req.body.data.closingTime,
                         minimumreservationduration:
-                            req.body.data.mininumReservationDuration,
+                            req.body.data.minimumReservationDuration,
                         reservationinterval: req.body.data.reservationInterval,
                         mapnumofrows: req.body.data.mapNumOfRows,
                         mapnumofcols: req.body.data.mapNumOfCols,
