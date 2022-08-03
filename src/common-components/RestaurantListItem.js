@@ -14,7 +14,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import { deleteReservationGuest, deleteRestaurantOwner } from '../api/api'
+import { deleteReservation, deleteRestaurantOwner } from '../api/api'
 import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
 import Utility from '../utility'
 import { useState } from 'react'
@@ -69,7 +69,7 @@ export default function RestaurantListItem(props) {
 
     const onReservationDeleteConfrimed = async (reservationid) => {
         try {
-            await deleteReservationGuest(reservationid)
+            await deleteReservation(reservationid)
             window.location.reload()
         } catch (e) {
             console.error(e)
@@ -104,6 +104,8 @@ export default function RestaurantListItem(props) {
             secondary={createOperatingHoursText(+data.openingtime, +data.closingtime)}
         />
     );
+
+    console.log('data', data);
 
     return (
         <div>
@@ -165,7 +167,8 @@ export default function RestaurantListItem(props) {
                                         <ListItemText>
                                             Your note: {data.note}
                                         </ListItemText>
-                                    </ListItem> : null}
+                                    </ListItem> : null
+                                }
                             </>
                             ) : null
                         }
@@ -190,7 +193,7 @@ export default function RestaurantListItem(props) {
                     </CardActions>
                 )}
 
-                {props.page === 'guestCurrentReservations' && (
+                {(props.page === 'guestCurrentReservations' || props.page === 'ownerRestaurantCurrentReservations')&& (
                     <CardActions sx={{
                         display: 'flex',
                         flexDirection: 'row',
@@ -220,6 +223,15 @@ export default function RestaurantListItem(props) {
                             variant='outlined'
                         >
                             Delete
+                        </Button>
+                        <Button
+                            component={Link}
+                            to={'/owner/restaurant/reservations'}
+                            color="primary"
+                            variant='outlined'
+                            state={data}
+                        >
+                            View reservations
                         </Button>
                         <Button
                             component={Link}
