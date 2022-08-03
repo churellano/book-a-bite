@@ -107,7 +107,7 @@ export const getCurrentReservationsGuest = (guestId) => {
     })
 }
 
-export const deleteReservationGuest = (reservationId) => {
+export const deleteReservation = (reservationId) => {
     return axios.delete(`${apiUrl}/api/guest/deleteReservation`, {
         data: {
             reservationId: reservationId,
