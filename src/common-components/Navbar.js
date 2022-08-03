@@ -16,6 +16,7 @@ import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import AdbIcon from '@mui/icons-material/Adb'
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 import { auth } from '../firebase-config'
 
@@ -187,11 +188,7 @@ export default function Navbar(props) {
                                 onClick={handleOpenUserMenu}
                                 sx={{ p: 0 }}
                             >
-                                {/* TODO: change Kemy Shart ro user.name */}
-                                <Avatar
-                                    alt="Kemy Sharp"
-                                    src="/static/images/avatar/2.jpg"
-                                />
+                                <SettingsIcon style={{ color: 'white' }}/>
                             </IconButton>
                         </Tooltip>
                         <Menu
