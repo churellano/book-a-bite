@@ -219,6 +219,18 @@ app.delete('/api/owner/deleteRestaurant', async (req, res) => {
     }
 })
 
+app.get('/api/owner/getReservationsByRestaurantId', async (req, res) => {
+    try {
+        let restaurantsArray = await pool('reservations')
+            .where('restaurantid', req.query.restaurantId)
+            .select('*')
+        res.json(restaurantsArray)
+    } catch (e) {
+        console.error(e)
+        res.status(500).json()
+    }
+})
+
 // **************************************** //
 // **        GUEST USER MODE APIS        ** //
 // **************************************** //

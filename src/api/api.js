@@ -58,6 +58,14 @@ export const deleteRestaurantOwner = (restaurantId) => {
     })
 }
 
+export const getReservationsByRestaurantIdOwner = (restaurantId) => {
+    return axios.get(`${apiUrl}/api/owner/getReservationsByRestaurantId`, {
+        params: {
+            restaurantId: restaurantId,
+        },
+    })
+}
+
 export const getProfileGuest = (guestid) => {
     return axios.get(`${apiUrl}/api/guest/profile`, {
         params: {
